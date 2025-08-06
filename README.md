@@ -6,8 +6,8 @@ Custom e-commerce and art platform showcasing Oliver's artwork, music, and inter
 
 ### Prerequisites
 - Node.js 18+ and npm
-- PostgreSQL database
-- Stripe account (for payments)
+- PostgreSQL database (or use SQLite for development)
+- Stripe account (for payments functionality)
 - Optional: AWS S3 or Cloudinary (for file storage)
 
 ### Installation
@@ -45,7 +45,49 @@ npm run db:seed  # Optional: seed with test data
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+Visit [http://localhost:3002](http://localhost:3002)
+
+The site will display a loading screen with animated rings and then redirect to `/en` for English.
+
+## 📦 Key Dependencies
+
+### Core
+- **Next.js 15.4.5** - React framework with App Router
+- **React 19.1.1** - UI library
+- **TypeScript 5.9.2** - Type safety
+
+### Styling
+- **Tailwind CSS 3.4.17** - Utility-first CSS (Note: v4 not compatible)
+- **@tailwindcss/forms** - Form styling
+- **@tailwindcss/typography** - Typography plugin
+
+### State & Data
+- **@reduxjs/toolkit** - State management
+- **Prisma 6.13.0** - Database ORM
+- **next-intl 4.3.4** - Internationalization
+
+### UI Components
+- **@radix-ui/react-slot** - Component composition
+- **class-variance-authority** - Variant management
+- **clsx & tailwind-merge** - Class utilities
+
+### Authentication & Payments
+- **next-auth 4.24.11** - Authentication
+- **Stripe 18.4.0** - Payment processing
+
+## ⚠️ Known Issues & Solutions
+
+### Port Configuration
+- Default port: **3002** (configurable in package.json)
+- If port is in use, kill the process: `lsof -ti:3002 | xargs kill -9`
+
+### Tailwind CSS Version
+- Must use Tailwind CSS v3 (v4 has breaking changes)
+- PostCSS config uses standard `tailwindcss` plugin
+
+### Next.js 15 Compatibility
+- Async params in layouts require proper handling
+- Server components use `getTranslations` instead of `useTranslations`
 
 ## 📁 Project Structure
 

@@ -1,9 +1,9 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function HomePage() {
-  const t = useTranslations('common');
+export default async function HomePage() {
+  const t = await getTranslations('common');
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">

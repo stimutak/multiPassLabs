@@ -4,7 +4,7 @@
   "description": "Welcome to the MultiPass Labs repository.",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -36,9 +36,11 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
     "@prisma/client": "^6.13.0",
+    "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.8.2",
     "@stripe/stripe-js": "^7.8.0",
     "axios": "^1.11.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "next": "^15.4.5",
     "next-auth": "^4.24.11",
@@ -67,7 +69,7 @@
     "jest-environment-jsdom": "^30.0.5",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.9.2"
   }
 }
