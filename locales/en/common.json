@@ -1,0 +1,41 @@
+{
+  "navigation": {
+    "home": "Home",
+    "shop": "Shop",
+    "gallery": "Gallery",
+    "music": "Music",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "actions": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "addToCart": "Add to Cart",
+    "viewCart": "View Cart",
+    "checkout": "Checkout",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up"
+  },
+  "labels": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "loading": "Loading...",
+    "noResults": "No results found"
+  },
+  "messages": {
+    "success": "Success",
+    "error": "Error",
+    "welcomeBack": "Welcome back!",
+    "itemAddedToCart": "Item added to cart",
+    "cartEmpty": "Your cart is empty"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Tienda",
+  "description": "Descubre obras de arte únicas y piezas exclusivas",
+  "product": {
+    "details": "Detalles del producto",
+    "description": "Descripción",
+    "dimensions": "Dimensiones",
+    "materials": "Materiales",
+    "availability": "Disponibilidad",
+    "inStock": "En stock",
+    "outOfStock": "Agotado",
+    "limitedEdition": "Edición limitada"
+  },
+  "cart": {
+    "title": "Carrito de compras",
+    "empty": "Tu carrito está vacío",
+    "itemCount": "{count} artículo",
+    "itemCount_plural": "{count} artículos",
+    "removeItem": "Eliminar artículo",
+    "updateQuantity": "Actualizar cantidad",
+    "subtotal": "Subtotal",
+    "shipping": "Envío",
+    "tax": "Impuestos",
+    "total": "Total"
+  },
+  "categories": {
+    "all": "Todos",
+    "paintings": "Pinturas",
+    "prints": "Impresiones",
+    "digital": "Arte digital",
+    "sculptures": "Esculturas"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Shop",
+  "description": "Discover unique artwork and exclusive pieces",
+  "product": {
+    "details": "Product Details",
+    "description": "Description",
+    "dimensions": "Dimensions",
+    "materials": "Materials",
+    "availability": "Availability",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "limitedEdition": "Limited Edition"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "itemCount": "{count} item",
+    "itemCount_plural": "{count} items",
+    "removeItem": "Remove item",
+    "updateQuantity": "Update quantity",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "total": "Total"
+  },
+  "categories": {
+    "all": "All",
+    "paintings": "Paintings",
+    "prints": "Prints",
+    "digital": "Digital Art",
+    "sculptures": "Sculptures"
+  }
+}

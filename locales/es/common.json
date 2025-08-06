@@ -1,0 +1,41 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "shop": "Tienda",
+    "gallery": "Galería",
+    "music": "Música",
+    "about": "Acerca de",
+    "contact": "Contacto"
+  },
+  "actions": {
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "search": "Buscar",
+    "addToCart": "Agregar al carrito",
+    "viewCart": "Ver carrito",
+    "checkout": "Finalizar compra",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "signup": "Registrarse"
+  },
+  "labels": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "total": "Total",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados"
+  },
+  "messages": {
+    "success": "Éxito",
+    "error": "Error",
+    "welcomeBack": "¡Bienvenido de nuevo!",
+    "itemAddedToCart": "Artículo agregado al carrito",
+    "cartEmpty": "Tu carrito está vacío"
+  }
+}
