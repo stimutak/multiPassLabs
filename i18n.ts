@@ -1,17 +1,26 @@
-import {notFound} from 'next/navigation';
-import {getRequestConfig} from 'next-intl/server';
+import { getRequestConfig } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 
-// Can be imported from a shared config
 const locales = ['en', 'es'];
 
-export default getRequestConfig(async ({locale}) => {
-  // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound();
+export default getRequestConfig(async ({ locale }) => {
+  // Validate that the incoming locale parameter is valid
+  if (!locale || !locales.includes(locale)) {
+    notFound();
+  }
 
-  return {
-    messages: {
-      ...(await import(`./locales/${locale}/common.json`)).default,
-      ...(await import(`./locales/${locale}/shop.json`)).default,
-    }
-  };
+  try {
+    const common = (await import(`./locales/${locale}/common.json`)).default;
+    const shop = (await import(`./locales/${locale}/shop.json`)).default;
+    
+    return {
+      messages: {
+        ...common,
+        ...shop,
+      }
+    };
+  } catch (error) {
+    console.error(`Failed to load messages for locale: ${locale}`, error);
+    notFound();
+  }
 });
