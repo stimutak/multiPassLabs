@@ -203,6 +203,44 @@ date.toLocaleDateString('en-US')
 4. **Immersive** - Clean, minimal UI that highlights artwork
 5. **International** - RTL support, locale-specific formatting
 
+## 🎭 Loading Experience Guidelines
+
+### Initial Load Screen
+The loading screen sets the tone for the entire platform experience:
+
+1. **Visual Design**:
+   - Purple/violet gradient background (from-gray-900 via-purple-900 to-violet-900)
+   - Dual rotating rings with opposite spin directions
+   - Animated floating particles for depth
+   - Centered "M" logo with pulsing effect
+   - Progress bar with gradient fill
+
+2. **Loading States**:
+   - **Initial**: "Preparing your experience..."
+   - **Gallery**: "Initializing art gallery..."
+   - **Shop**: "Connecting to shop..."
+   - **Music**: "Loading audio..."
+   - **Complete**: "Ready to explore!"
+
+3. **Animation Timings**:
+   - Minimum display: 2 seconds (prevents flash)
+   - Message rotation: Every 2 seconds
+   - Progress simulation: Smooth with slight randomness
+   - Fade transitions: 500ms duration
+
+4. **Implementation Components**:
+   - `components/ui/loading.tsx` - Main loading screen
+   - `components/client-layout.tsx` - Layout wrapper with loading state
+   - `lib/hooks/useLoading.ts` - Loading state management hooks
+   - CSS animations in `styles/globals.css`
+
+5. **Best Practices**:
+   - Always show loading for data-heavy operations
+   - Use skeleton loaders for content areas
+   - Implement progressive image loading
+   - Maintain loading state during route transitions
+   - Respect user's motion preferences (prefers-reduced-motion)
+
 ## 🧪 Testing Requirements
 
 ### Before ANY commit:

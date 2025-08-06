@@ -37,5 +37,14 @@
     "welcomeBack": "¡Bienvenido de nuevo!",
     "itemAddedToCart": "Artículo agregado al carrito",
     "cartEmpty": "Tu carrito está vacío"
+  },
+  "loading": {
+    "preparing": "Preparando tu experiencia...",
+    "initializing": "Inicializando galería de arte...",
+    "almost": "Casi listo...",
+    "ready": "¡Listo para explorar!",
+    "loadingArt": "Cargando obras de arte...",
+    "loadingMusic": "Cargando audio...",
+    "connectingShop": "Conectando con la tienda..."
   }
 }

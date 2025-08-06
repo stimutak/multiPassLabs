@@ -7,6 +7,7 @@ import { ReactNode } from 'react';
 
 import { Providers } from '@/components/providers';
 import { Header } from '@/components/ui/header';
+import { ClientLayout } from '@/components/client-layout';
 import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -43,8 +44,10 @@ export default async function RootLayout({
       <body className={inter.className}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <Header />
-            {children}
+            <ClientLayout>
+              <Header />
+              {children}
+            </ClientLayout>
           </Providers>
         </NextIntlClientProvider>
       </body>

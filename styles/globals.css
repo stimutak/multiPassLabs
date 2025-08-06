@@ -77,3 +77,82 @@
     @apply bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent;
   }
 }
+
+/* Loading animations */
+@layer utilities {
+  @keyframes spin-reverse {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+      opacity: 0.3;
+    }
+    25% {
+      transform: translateY(-20px) translateX(10px);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(10px) translateX(-10px);
+      opacity: 0.5;
+    }
+    75% {
+      transform: translateY(-10px) translateX(5px);
+      opacity: 0.8;
+    }
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(147, 51, 234, 0.8);
+    }
+  }
+  
+  .animate-spin-reverse {
+    animation: spin-reverse 2s linear infinite;
+  }
+  
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+}
+
+/* Loading screen specific styles */
+@layer components {
+  .loading-gradient {
+    @apply bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900;
+  }
+  
+  .loading-ring {
+    @apply rounded-full border-4;
+  }
+  
+  .loading-dot {
+    @apply bg-gradient-to-br from-purple-500 to-violet-500 rounded-full;
+  }
+}
