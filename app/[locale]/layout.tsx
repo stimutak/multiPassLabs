@@ -21,14 +21,14 @@ const locales = ['en', 'es'];
 
 interface RootLayoutProps {
   children: ReactNode;
-  params: Promise<{ locale: string }>;
+  params: { locale: string };
 }
 
 export default async function RootLayout({
   children,
   params,
 }: RootLayoutProps) {
-  const { locale } = await params;
+  const { locale } = params;
   
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale)) {
@@ -45,7 +45,6 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <ClientLayout>
-              <Header />
               {children}
             </ClientLayout>
           </Providers>
