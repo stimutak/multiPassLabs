@@ -1,53 +1,42 @@
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { ReactNode } from 'react';
-
-import { Providers } from '@/components/providers';
-import { Header } from '@/components/ui/header';
-import { ClientLayout } from '@/components/client-layout';
 import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'MultiPass Labs - Art & Music Platform',
-  description: 'Immersive international art platform with real-time visuals and audio-reactive content',
-};
-
-const locales = ['en', 'es'];
-
-interface RootLayoutProps {
-  children: ReactNode;
-  params: Promise<{ locale: string }>;
-}
-
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
-}: RootLayoutProps) {
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
   
-  // Validate that the incoming `locale` parameter is valid
+  // Validate locale
+  const locales = ['en', 'es'];
   if (!locales.includes(locale)) {
     notFound();
   }
 
-  // Providing all messages to the client
-  // side is the easiest way to get started
-  const messages = await getMessages();
+  // Get messages
+  let messages;
+  try {
+    messages = await getMessages();
+  } catch (error) {
+    console.error('Failed to load messages:', error);
+    messages = {};
+  }
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider messages={messages}>
-          <Providers>
-            <ClientLayout>
-              {children}
-            </ClientLayout>
-          </Providers>
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
+            {children}
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>

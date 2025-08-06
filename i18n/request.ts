@@ -1,26 +1,52 @@
 import { getRequestConfig } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-
-const locales = ['en', 'es'];
 
 export default getRequestConfig(async ({ locale }) => {
-  // Validate that the incoming locale parameter is valid
-  if (!locale || !locales.includes(locale)) {
-    notFound();
-  }
-
+  // Default to 'en' if locale is undefined
+  const currentLocale = locale || 'en';
+  
   try {
-    const common = (await import(`../locales/${locale}/common.json`)).default;
-    const shop = (await import(`../locales/${locale}/shop.json`)).default;
+    // Load all message files for the locale
+    const [commonMessages, shopMessages] = await Promise.all([
+      import(`../locales/${currentLocale}/common.json`),
+      import(`../locales/${currentLocale}/shop.json`)
+    ]);
+    
+    // Merge all messages into a single object with namespaces
+    const messages = {
+      common: commonMessages.default,
+      shop: shopMessages.default
+    };
     
     return {
-      messages: {
-        ...common,
-        ...shop,
-      }
+      locale: currentLocale,
+      messages
     };
   } catch (error) {
-    console.error(`Failed to load messages for locale: ${locale}`, error);
-    notFound();
+    console.error(`Failed to load messages for locale: ${currentLocale}`, error);
+    // Return fallback messages with proper structure
+    return {
+      locale: currentLocale,
+      messages: {
+        common: {
+          navigation: {
+            home: 'Home',
+            shop: 'Shop',
+            gallery: 'Gallery',
+            music: 'Music'
+          },
+          messages: {},
+          actions: {},
+          labels: {},
+          loading: {}
+        },
+        shop: {
+          title: 'Shop',
+          description: 'Discover unique artwork and exclusive pieces',
+          product: {},
+          cart: {},
+          categories: {}
+        }
+      }
+    };
   }
 });
