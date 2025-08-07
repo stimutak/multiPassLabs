@@ -301,53 +301,53 @@ function MatrixRainBackground() {
     canvas.style.pointerEvents = 'none';
     
     const container = document.getElementById('matrix-container');
-    if (container) {
-      container.appendChild(canvas);
-      
-      const resizeCanvas = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      };
-      
-      resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
-      
-      const chars = 'アイウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]()_+-=';
-      const charArray = chars.split('');
-      const fontSize = 12;
-      const columns = canvas.width / fontSize;
-      const drops: number[] = [];
-      
-      for (let i = 0; i < columns; i++) {
-        drops[i] = Math.floor(Math.random() * -100);
-      }
-      
-      const draw = () => {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = '#00ff00';
-        ctx.font = fontSize + 'px monospace';
-        
-        for (let i = 0; i < drops.length; i++) {
-          const text = charArray[Math.floor(Math.random() * charArray.length)];
-          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-          
-          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-          }
-          drops[i]++;
-        }
-      };
-      
-      const interval = setInterval(draw, 35);
-      
-      return () => {
-        clearInterval(interval);
-        window.removeEventListener('resize', resizeCanvas);
-        canvas.remove();
-      };
+    if (!container) return;
+    
+    container.appendChild(canvas);
+    
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    const chars = 'アイウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]()_+-=';
+    const charArray = chars.split('');
+    const fontSize = 12;
+    const columns = canvas.width / fontSize;
+    const drops: number[] = [];
+    
+    for (let i = 0; i < columns; i++) {
+      drops[i] = Math.floor(Math.random() * -100);
     }
+    
+    const draw = () => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#00ff00';
+      ctx.font = fontSize + 'px monospace';
+      
+      for (let i = 0; i < drops.length; i++) {
+        const text = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+    
+    const interval = setInterval(draw, 35);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', resizeCanvas);
+      canvas.remove();
+    };
   }, []);
   
   return <div id="matrix-container" className="absolute inset-0" />;
