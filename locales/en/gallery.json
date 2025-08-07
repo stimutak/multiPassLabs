@@ -1,0 +1,22 @@
+{
+  "title": "Gallery",
+  "subtitle": "Immersive visual experiences and experimental artwork",
+  "featured": "Featured Works",
+  "latest": "Latest Works", 
+  "allItems": "All Works",
+  "filterByEntity": "Filter by Lab Entity",
+  "filterByType": "Filter by Type",
+  "allEntities": "All Entities",
+  "allTypes": "All Types",
+  "noItems": "No gallery items yet.",
+  "noItemsForFilter": "No items match the selected filters.",
+  "clearEntityFilter": "Clear Entity Filter",
+  "clearTypeFilter": "Clear Type Filter",
+  "loading": "Loading gallery...",
+  "viewFullscreen": "View Fullscreen",
+  "downloadImage": "Download Image",
+  "shareItem": "Share Item",
+  "createdBy": "Created by",
+  "viewDetails": "View Details",
+  "relatedWorks": "Related Works"
+}

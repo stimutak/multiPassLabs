@@ -1,0 +1,19 @@
+{
+  "title": "Lab Experiments",
+  "subtitle": "Discoveries and experiments from the Multipass Labs collective",
+  "featured": "Featured Experiments",
+  "latest": "Latest Experiments",
+  "allPosts": "All Experiments",
+  "filterByEntity": "Filter by Lab Entity",
+  "allEntities": "All Entities",
+  "noPosts": "No experiments have been published yet.",
+  "noPostsForEntity": "No experiments from this entity yet.",
+  "showAllPosts": "Show All Experiments",
+  "loading": "Loading experiments...",
+  "readMore": "Read More",
+  "backToBlog": "← Back to Experiments",
+  "publishedBy": "Published by",
+  "tags": "Tags",
+  "relatedPosts": "Related Experiments",
+  "sharePost": "Share Experiment"
+}

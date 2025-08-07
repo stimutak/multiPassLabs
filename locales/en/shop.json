@@ -29,5 +29,13 @@
     "prints": "Prints",
     "digital": "Digital Art",
     "sculptures": "Sculptures"
-  }
+  },
+  "addToCart": "Add to Cart",
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "outOfStock": "Out of Stock",
+  "createdBy": "Created by",
+  "filterByEntity": "Filter by Lab Entity",
+  "allEntities": "All Entities",
+  "entityAttribution": "Entity Attribution"
 }

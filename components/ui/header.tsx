@@ -29,6 +29,9 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
+          <Link href="/blog" className="text-foreground/60 hover:text-foreground transition-colors">
+            {t('navigation.blog')}
+          </Link>
           <Link href="/shop" className="text-foreground/60 hover:text-foreground transition-colors">
             {t('navigation.shop')}
           </Link>
@@ -93,6 +96,13 @@ export function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t">
           <nav className="container py-4 space-y-2">
+            <Link
+              href="/blog"
+              className="block px-4 py-2 text-foreground/60 hover:text-foreground transition-colors"
+              onClick={() => dispatch(toggleMobileMenu())}
+            >
+              {t('navigation.blog')}
+            </Link>
             <Link
               href="/shop"
               className="block px-4 py-2 text-foreground/60 hover:text-foreground transition-colors"

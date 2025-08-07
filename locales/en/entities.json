@@ -1,0 +1,27 @@
+{
+  "entitySignature": "Entity Signature",
+  "createdBy": "Created by",
+  "attributedTo": "Attributed to",
+  "entityRole": "Entity Role",
+  "glitchMode": "Glitch Mode",
+  "entityColor": "Entity Color",
+  "entityVersion": "Version",
+  "randomEntity": "Random Entity",
+  "selectEntity": "Select Entity",
+  "entityFilter": "Entity Filter",
+  "allEntitiesLabel": "All Lab Entities",
+  "entityNotFound": "Entity not found",
+  "entityDescription": "Lab Entity",
+  "signatures": {
+    "null-form": "Logic-melting glitch theorist",
+    "drexom": "Structural rewriter/chaos mapper", 
+    "noize-path": "Audio-reactive tactician",
+    "xeno-form": "Generative alien artifacts expert",
+    "filament": "Delicate waveform sculptor",
+    "sub-signal": "Feedback manipulator",
+    "iris-fade": "Cinematic ghost of soft light",
+    "ctrl-noir": "Interface saboteur",
+    "node-state": "Topological flow architect",
+    "multipass": "Meta-entity/master access"
+  }
+}
