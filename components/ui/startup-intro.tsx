@@ -3,6 +3,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { 
+  initAudio, 
+  playBootSound, 
+  playSystemCheckSound, 
+  playGlitchSound,
+  playAmbientDrone,
+  toggleAudioMute
+} from '@/lib/audio/glitch-audio';
+import { LAB_ENTITIES, formatEntitySignature } from '@/lib/entities';
+
 // Typewriter effect for boot sequence
 function Typewriter({ text, onComplete }: { text: string; onComplete?: () => void }) {
   const [displayText, setDisplayText] = useState('');
@@ -91,19 +101,20 @@ function AsciiLogo() {
   );
 }
 
-// System info display
-function SystemInfo() {
+// System info display with entity signatures
+function SystemInfo({ onLineRender }: { onLineRender?: () => void }) {
   const [lines, setLines] = useState<string[]>([]);
   
+  // Generate system lines with random entity signatures
   const systemLines = [
     '> Initializing core systems...',
-    '> Loading art modules... [OK]',
-    '> Connecting to neural network... [OK]',
-    '> Establishing quantum tunnel... [OK]',
-    '> Synchronizing creative matrix... [OK]',
-    '> Building reality mesh... [OK]',
+    `> Loading art modules... ${formatEntitySignature(LAB_ENTITIES[0]!)} [OK]`,
+    `> Connecting to neural network... ${formatEntitySignature(LAB_ENTITIES[2]!)} [OK]`,
+    `> Establishing quantum tunnel... ${formatEntitySignature(LAB_ENTITIES[4]!)} [OK]`,
+    `> Synchronizing creative matrix... ${formatEntitySignature(LAB_ENTITIES[6]!)} [OK]`,
+    `> Building reality mesh... ${formatEntitySignature(LAB_ENTITIES[8]!)} [OK]`,
     '',
-    '> System ready.',
+    `> System ready. ${formatEntitySignature(LAB_ENTITIES[9]!)}`,
     '> Welcome to MultiPass Labs.'
   ];
 
@@ -112,6 +123,7 @@ function SystemInfo() {
     const interval = setInterval(() => {
       if (index < systemLines.length) {
         setLines(prev => [...prev, systemLines[index]]);
+        if (onLineRender) onLineRender();
         index++;
       } else {
         clearInterval(interval);
@@ -119,7 +131,7 @@ function SystemInfo() {
     }, 200);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [onLineRender]);
 
   return (
     <div className="font-mono text-green-400 text-xs space-y-1">
@@ -195,22 +207,49 @@ function MatrixRain() {
 export default function StartupIntro({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<'boot' | 'system' | 'logo' | 'ready'>('boot');
   const [skipHover, setSkipHover] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioInitialized, setAudioInitialized] = useState(false);
+  const selectedEntity = useRef(LAB_ENTITIES[Math.floor(Math.random() * LAB_ENTITIES.length)] || LAB_ENTITIES[0]);
+  
+  // Initialize audio on first user interaction
+  const handleUserInteraction = async () => {
+    if (!audioInitialized) {
+      await initAudio();
+      setAudioInitialized(true);
+      setAudioEnabled(true);
+      playBootSound();
+      playAmbientDrone(10);
+    }
+  };
+
+  useEffect(() => {
+    // Add click listener for audio initialization
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
+    
+    return () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, [audioInitialized]);
   
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
     
     if (phase === 'boot') {
+      if (audioEnabled) playBootSound();
       timers.push(setTimeout(() => setPhase('system'), 2000));
     } else if (phase === 'system') {
       timers.push(setTimeout(() => setPhase('logo'), 3000));
     } else if (phase === 'logo') {
+      if (audioEnabled) playGlitchSound();
       timers.push(setTimeout(() => setPhase('ready'), 2000));
     } else if (phase === 'ready') {
       timers.push(setTimeout(onComplete, 1000));
     }
     
     return () => timers.forEach(timer => clearTimeout(timer));
-  }, [phase, onComplete]);
+  }, [phase, onComplete, audioEnabled]);
 
   return (
     <AnimatePresence mode="wait">
@@ -235,6 +274,9 @@ export default function StartupIntro({ onComplete }: { onComplete: () => void })
                 <div className="mt-4 text-green-400 font-mono text-xs opacity-60">
                   <GlitchText text="Reality Engine Initialized" />
                 </div>
+                <div className="mt-2 text-xs font-mono" style={{ color: selectedEntity.current?.color }}>
+                  {selectedEntity.current && formatEntitySignature(selectedEntity.current)} ACTIVE
+                </div>
               </motion.div>
             )}
             
@@ -244,7 +286,7 @@ export default function StartupIntro({ onComplete }: { onComplete: () => void })
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <SystemInfo />
+                <SystemInfo onLineRender={() => audioEnabled && playSystemCheckSound()} />
               </motion.div>
             )}
             
@@ -284,15 +326,29 @@ export default function StartupIntro({ onComplete }: { onComplete: () => void })
           </div>
         </div>
         
-        {/* Skip button */}
-        <button
-          onClick={onComplete}
-          onMouseEnter={() => setSkipHover(true)}
-          onMouseLeave={() => setSkipHover(false)}
-          className="absolute top-4 right-4 font-mono text-green-400/40 hover:text-green-400 text-xs transition-colors"
-        >
-          {skipHover ? '[SKIP]' : 'skip'}
-        </button>
+        {/* Controls */}
+        <div className="absolute top-4 right-4 flex gap-4">
+          {/* Audio toggle */}
+          <button
+            onClick={() => {
+              const newState = toggleAudioMute();
+              setAudioEnabled(!newState);
+            }}
+            className="font-mono text-green-400/40 hover:text-green-400 text-xs transition-colors"
+          >
+            {audioEnabled ? '[AUDIO: ON]' : '[AUDIO: OFF]'}
+          </button>
+          
+          {/* Skip button */}
+          <button
+            onClick={onComplete}
+            onMouseEnter={() => setSkipHover(true)}
+            onMouseLeave={() => setSkipHover(false)}
+            className="font-mono text-green-400/40 hover:text-green-400 text-xs transition-colors"
+          >
+            {skipHover ? '[SKIP]' : 'skip'}
+          </button>
+        </div>
         
         {/* Scanlines effect */}
         <div className="absolute inset-0 pointer-events-none">

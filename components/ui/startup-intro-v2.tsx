@@ -2,17 +2,29 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+import { 
+  initAudio, 
+  playBootSound, 
+  playSystemCheckSound, 
+  playGlitchSound,
+  playAmbientDrone,
+  playTypingSound,
+  toggleAudioMute
+} from '@/lib/audio/glitch-audio';
 import { LAB_ENTITIES, formatEntitySignature, glitchText } from '@/lib/entities';
 
 // Enhanced typewriter with glitch capability
 function GlitchTypewriter({ 
   text, 
   onComplete,
-  glitchFrequency = 0.1 
+  glitchFrequency = 0.1,
+  withSound = true 
 }: { 
   text: string; 
   onComplete?: () => void;
   glitchFrequency?: number;
+  withSound?: boolean;
 }) {
   const [displayText, setDisplayText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
@@ -25,9 +37,15 @@ function GlitchTypewriter({
     
     const interval = setInterval(() => {
       if (index <= text.length) {
+        // Play typing sound
+        if (withSound && index > 0 && index % 2 === 0) {
+          playTypingSound();
+        }
+        
         // Random glitch effect
         if (Math.random() < glitchFrequency && index > 0) {
           setGlitchActive(true);
+          if (withSound) playGlitchSound();
           const glitchedPart = Array.from({ length: Math.min(5, index) }, 
             () => glitchChars[Math.floor(Math.random() * glitchChars.length)]
           ).join('');
@@ -235,11 +253,32 @@ function GlitchOverlay() {
 export default function StartupIntroV2({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<'boot' | 'entities' | 'logo' | 'ready'>('boot');
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioInitialized, setAudioInitialized] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   
+  // Initialize audio on first user interaction
+  const handleUserInteraction = async () => {
+    if (!audioInitialized) {
+      await initAudio();
+      setAudioInitialized(true);
+      setAudioEnabled(true);
+      playBootSound();
+      playAmbientDrone(15);
+    }
+  };
+
   useEffect(() => {
     console.log('StartupIntroV2 mounted, initial phase:', phase);
-  }, []);
+    
+    // Add click/key listeners for audio initialization
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
+    
+    return () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, [audioInitialized]);
   
   // Phase progression
   useEffect(() => {
@@ -247,16 +286,19 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
     const timers: NodeJS.Timeout[] = [];
     
     if (phase === 'boot') {
+      if (audioEnabled) playBootSound();
       timers.push(setTimeout(() => {
         console.log('Transitioning to entities phase');
         setPhase('entities');
       }, 1500));
     } else if (phase === 'entities') {
+      if (audioEnabled) playSystemCheckSound();
       timers.push(setTimeout(() => {
         console.log('Transitioning to logo phase');
         setPhase('logo');
       }, 4000));
     } else if (phase === 'logo') {
+      if (audioEnabled) playGlitchSound();
       timers.push(setTimeout(() => {
         console.log('Transitioning to ready phase');
         setPhase('ready');
@@ -269,7 +311,7 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
     }
     
     return () => timers.forEach(timer => clearTimeout(timer));
-  }, [phase, onComplete]);
+  }, [phase, onComplete, audioEnabled]);
 
   // Glitch audio generation (Richard Devine style)
   useEffect(() => {
@@ -416,10 +458,13 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
         {/* Controls */}
         <div className="absolute top-4 right-4 flex gap-4">
           <button
-            onClick={() => setAudioEnabled(!audioEnabled)}
+            onClick={() => {
+              const newState = toggleAudioMute();
+              setAudioEnabled(!newState);
+            }}
             className="font-mono text-green-400/40 hover:text-green-400 text-xs transition-colors"
           >
-            [{audioEnabled ? 'MUTE' : 'SOUND'}]
+            [{audioEnabled ? 'AUDIO: ON' : 'AUDIO: OFF'}]
           </button>
           <button
             onClick={onComplete}
