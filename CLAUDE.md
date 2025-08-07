@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🚨 CRITICAL: READ BEFORE ANY CODE CHANGES
 
-**Project:** Custom E-commerce/Art Platform for Oliver's artwork, music, and interactive experiences  
+**Project:** Multipass Labs - Experimental collective platform for audio-reactive visuals and generative art  
 **Stack:** Next.js 14+, TypeScript, PostgreSQL, Stripe  
-**Goal:** Immersive, international art platform with real-time visuals and audio-reactive content
+**Goal:** Dark, glitchy terminal-aesthetic platform operated by 10 mysterious lab entities showcasing experiments in TouchDesigner, Notch, Max/MSP, SuperCollider, and web-based generative art
 
 ## ⚡ Quick Reference Commands
 
@@ -203,43 +203,53 @@ date.toLocaleDateString('en-US')
 4. **Immersive** - Clean, minimal UI that highlights artwork
 5. **International** - RTL support, locale-specific formatting
 
-## 🎭 Loading Experience Guidelines
+## 🎭 Loading Experience & Lab Entity System
 
-### Initial Load Screen
-The loading screen sets the tone for the entire platform experience:
+### ASCII Boot Sequence (Terminal Style)
+The site opens with a glitchy terminal boot sequence that establishes the mysterious lab atmosphere:
 
 1. **Visual Design**:
-   - Purple/violet gradient background (from-gray-900 via-purple-900 to-violet-900)
-   - Dual rotating rings with opposite spin directions
-   - Animated floating particles for depth
-   - Centered "M" logo with pulsing effect
-   - Progress bar with gradient fill
+   - Pure black background (#000000)
+   - Green phosphor terminal text (#00ff00)
+   - Matrix rain effect in background (opacity 10%)
+   - ASCII art logo for Multipass Labs
+   - Glitch effects and scanlines
+   - Richard Devine-inspired audio (optional toggle)
 
-2. **Loading States**:
-   - **Initial**: "Preparing your experience..."
-   - **Gallery**: "Initializing art gallery..."
-   - **Shop**: "Connecting to shop..."
-   - **Music**: "Loading audio..."
-   - **Complete**: "Ready to explore!"
+2. **Boot Sequence Phases**:
+   - **Phase 1 - Boot**: "[SYSTEM] Booting MultiPass Labs v1.0.0..."
+   - **Phase 2 - System**: Progressive system checks with entity signatures
+   - **Phase 3 - Logo**: ASCII art reveal with "Press any key to continue..."
+   - **Phase 4 - Ready**: "WELCOME - Entering the multiverse..."
 
-3. **Animation Timings**:
-   - Minimum display: 2 seconds (prevents flash)
-   - Message rotation: Every 2 seconds
-   - Progress simulation: Smooth with slight randomness
-   - Fade transitions: 500ms duration
+3. **Lab Entities (10 Personas)**:
+   Each post is randomly attributed to one of these entities:
+   
+   | Entity | Signature | Color | Role |
+   |--------|-----------|-------|------|
+   | nU11.form | [nU11.form] v0.3a | #00f4ff | Logic-melting glitch theorist |
+   | drex:0m | [drex:0m] b01 | #9b59ff | Structural rewriter/chaos mapper |
+   | noize.p4th | [noize.p4th] //dev.05 | #59ff6d | Audio-reactive tactician |
+   | x3n0.form | [x3n0.form] ∆x.14 | #0078f2 | Generative alien artifacts expert |
+   | ƒ1lament | [ƒ1lament] v1.0a | #d982ff | Delicate waveform sculptor |
+   | 5ub.signal | [5ub.signal] .sig/3.3 | #ffe95c | Feedback manipulator |
+   | 1r1s.fade | [1r1s.fade] ::OBSCURA | #ffa4f9 | Cinematic ghost of soft light |
+   | ctrlN0!r | [ctrlN0!r] CRL/09 | #ff5566 | Interface saboteur |
+   | NØD3//STATE | [NØD3//STATE] 07_hz | #58d2bf | Topological flow architect |
+   | mu1ti.p@ss | [mu1ti.p@ss] root | #dddddd | Meta-entity/master access |
 
 4. **Implementation Components**:
-   - `components/ui/loading.tsx` - Main loading screen
-   - `components/client-layout.tsx` - Layout wrapper with loading state
-   - `lib/hooks/useLoading.ts` - Loading state management hooks
-   - CSS animations in `styles/globals.css`
+   - `components/ui/startup-intro.tsx` - ASCII boot sequence
+   - `lib/entities.ts` - Lab entity definitions and logic
+   - `lib/audio/glitch-audio.ts` - Richard Devine-style sound generation
+   - `styles/terminal.css` - Terminal-specific styles
 
-5. **Best Practices**:
-   - Always show loading for data-heavy operations
-   - Use skeleton loaders for content areas
-   - Implement progressive image loading
-   - Maintain loading state during route transitions
-   - Respect user's motion preferences (prefers-reduced-motion)
+5. **Entity Attribution System**:
+   - Random assignment on post creation
+   - Manual override option in post editor
+   - Entity signature appears with posts
+   - Accent color highlights on cards/buttons
+   - Version tags like [sig/3.3] in metadata
 
 ## 🧪 Testing Requirements
 
@@ -293,6 +303,50 @@ SMTP_PORT=
 SMTP_USER=
 SMTP_PASS=
 ```
+
+## 🔄 TRANSFORMATION PLAN: Multipass Labs Collective
+
+### Phase 1: Core Infrastructure (Current)
+**Owner:** Claude Code
+- [ ] Create lab entities data structure (`lib/entities.ts`)
+- [ ] Update startup intro with entity signatures
+- [ ] Implement glitch audio system (Web Audio API)
+- [ ] Create terminal-style CSS framework
+
+### Phase 2: Visual Transformation
+**Owner:** Claude Code
+- [ ] Convert site to dark terminal aesthetic
+- [ ] Replace gradient backgrounds with black/glitch
+- [ ] Update typography to monospace/terminal fonts
+- [ ] Add scanline and CRT effects
+
+### Phase 3: Entity Attribution System
+**Owner:** Task Agent (for complex state management)
+- [ ] Create post metadata system for entities
+- [ ] Random entity assignment logic
+- [ ] Entity signature injection in posts
+- [ ] Color accent system per entity
+
+### Phase 4: Content & Pages
+**Owner:** Claude Code
+- [ ] Update About page with collective lore
+- [ ] Create experiments section layout
+- [ ] Design history/timeline view
+- [ ] Implement blog with entity attribution
+
+### Phase 5: Interactive Features
+**Owner:** Task Agent (for performance optimization)
+- [ ] Audio toggle in settings
+- [ ] Glitch effects on hover
+- [ ] Terminal commands easter eggs
+- [ ] Entity switching animations
+
+### Deployment Checklist
+- [ ] Test all entity attributions
+- [ ] Verify audio works across browsers
+- [ ] Check mobile terminal experience
+- [ ] Performance audit (target <2s load)
+- [ ] Accessibility for screen readers
 
 ## ❌ Common Mistakes to Avoid
 
