@@ -4,20 +4,19 @@ import { useEffect, useState } from 'react';
 import StartupIntroV2 from '@/components/ui/startup-intro-v2';
 
 export default function Template({ children }: { children: React.ReactNode }) {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
 
   useEffect(() => {
-    // For testing: Always show intro for now
-    // Later we can re-enable sessionStorage check
-    // const introShown = sessionStorage.getItem('introShown');
-    // if (introShown) {
-    //   setShowIntro(false);
-    // }
+    // Check if intro has been shown this session
+    const introShown = sessionStorage.getItem('introShown');
+    if (!introShown) {
+      setShowIntro(true);
+    }
   }, []);
 
   const handleIntroComplete = () => {
     setShowIntro(false);
-    // sessionStorage.setItem('introShown', 'true');
+    sessionStorage.setItem('introShown', 'true');
   };
 
   return (

@@ -2,6 +2,7 @@
 
 import { SimpleHeader } from '@/components/ui/simple-header';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { LAB_ENTITIES, getRandomEntity, glitchText } from '@/lib/entities';
 import { motion } from 'framer-motion';
 
@@ -81,7 +82,10 @@ export default function HomePage() {
     let index = 0;
     const interval = setInterval(() => {
       if (index < commands.length) {
-        setCommandHistory(prev => [...prev.slice(-4), commands[index]]);
+        const cmd = commands[index];
+        if (cmd) {
+          setCommandHistory(prev => [...prev.slice(-4), cmd]);
+        }
         index++;
       } else {
         index = 0;
@@ -168,7 +172,7 @@ export default function HomePage() {
               
               {/* Navigation Commands */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <a href="/en/gallery" className="group">
+                <Link href="/en/gallery" className="group">
                   <div className="bg-black border border-green-500/30 rounded p-4 hover:border-green-400 hover:bg-green-500/5 transition-all">
                     <div className="font-mono text-green-400 text-sm mb-2">
                       $ <span className="text-yellow-400">cd</span> /gallery
@@ -177,9 +181,9 @@ export default function HomePage() {
                       // Interactive visual experiments
                     </div>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="/en/shop" className="group">
+                <Link href="/en/shop" className="group">
                   <div className="bg-black border border-green-500/30 rounded p-4 hover:border-green-400 hover:bg-green-500/5 transition-all">
                     <div className="font-mono text-green-400 text-sm mb-2">
                       $ <span className="text-yellow-400">cd</span> /shop
@@ -188,9 +192,9 @@ export default function HomePage() {
                       // Digital artifacts marketplace
                     </div>
                   </div>
-                </a>
+                </Link>
                 
-                <a href="/en/music" className="group">
+                <Link href="/en/music" className="group">
                   <div className="bg-black border border-green-500/30 rounded p-4 hover:border-green-400 hover:bg-green-500/5 transition-all">
                     <div className="font-mono text-green-400 text-sm mb-2">
                       $ <span className="text-yellow-400">cd</span> /music
@@ -199,7 +203,7 @@ export default function HomePage() {
                       // Audio-reactive experiences
                     </div>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
