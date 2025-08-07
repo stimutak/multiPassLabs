@@ -13,6 +13,7 @@
     "start:next": "next start",
     "start:passenger": "NODE_ENV=production node app.js",
     "lint": "next lint",
+    "postinstall": "prisma generate",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "typecheck": "tsc --noEmit",
     "test": "jest",
