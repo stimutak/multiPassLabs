@@ -134,7 +134,9 @@ export class GlitchAudioSystem {
     
     // Distortion
     const distortion = this.audioContext.createWaveShaper();
-    distortion.curve = this.makeDistortionCurve(50);
+    const curve = this.makeDistortionCurve(50);
+    // @ts-ignore - TypeScript strict mode issue with ArrayBufferLike vs ArrayBuffer
+    distortion.curve = curve;
     
     noise.connect(filter1);
     filter1.connect(filter2);

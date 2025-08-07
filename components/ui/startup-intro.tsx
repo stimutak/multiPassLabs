@@ -122,7 +122,10 @@ function SystemInfo({ onLineRender }: { onLineRender?: () => void }) {
     let index = 0;
     const interval = setInterval(() => {
       if (index < systemLines.length) {
-        setLines(prev => [...prev, systemLines[index]]);
+        const line = systemLines[index];
+        if (line !== undefined) {
+          setLines(prev => [...prev, line]);
+        }
         if (onLineRender) onLineRender();
         index++;
       } else {
@@ -182,12 +185,16 @@ function MatrixRain() {
       
       for (let i = 0; i < drops.length; i++) {
         const text = charArray[Math.floor(Math.random() * charArray.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+        const dropValue = drops[i];
+        if (text && dropValue !== undefined) {
+          ctx.fillText(text, i * fontSize, dropValue * fontSize);
         }
-        drops[i]++;
+        
+        if (dropValue !== undefined && dropValue * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        } else if (dropValue !== undefined) {
+          drops[i] = dropValue + 1;
+        }
       }
     };
 

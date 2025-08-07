@@ -121,7 +121,7 @@ function GlitchAsciiLogo() {
       <pre className="font-mono text-xs leading-tight select-none" style={{ color: '#4ade80' }}>
         {logo.map((line, i) => (
           <div key={i} className={i === glitchLine ? 'text-red-500' : ''}>
-            {i === glitchLine ? glitchText(line, LAB_ENTITIES[0]) : line}
+            {i === glitchLine ? glitchText(line, LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!) : line}
           </div>
         ))}
       </pre>
@@ -418,7 +418,7 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
                   <GlitchTypewriter text="WELCOME TO THE COLLECTIVE" glitchFrequency={0.2} />
                 </div>
                 <div className="text-sm" style={{ color: '#4ade80', opacity: 0.6 }}>
-                  {LAB_ENTITIES[Math.floor(Math.random() * LAB_ENTITIES.length)].signature} online
+                  {LAB_ENTITIES[Math.floor(Math.random() * LAB_ENTITIES.length)]?.signature || '[UNKNOWN]'} online
                 </div>
               </motion.div>
             )}
@@ -490,12 +490,16 @@ function MatrixRain() {
       
       for (let i = 0; i < drops.length; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+        if (text && drops[i] !== undefined) {
+          ctx.fillText(text, i * fontSize, drops[i]! * fontSize);
         }
-        drops[i]++;
+        
+        const dropValue = drops[i];
+        if (dropValue !== undefined && dropValue * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        } else if (dropValue !== undefined) {
+          drops[i] = dropValue + 1;
+        }
       }
     };
 

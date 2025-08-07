@@ -59,7 +59,7 @@ function TerminalLine({ children, prefix = '>', delay = 0 }: { children: React.R
 }
 
 export default function HomePage() {
-  const [currentEntity, setCurrentEntity] = useState(LAB_ENTITIES[0]);
+  const [currentEntity, setCurrentEntity] = useState(LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function HomePage() {
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
                 <div className="font-mono text-xs text-green-400/60">
-                  terminal@multipass.labs ~ {currentEntity.signature}
+                  terminal@multipass.labs ~ {currentEntity?.signature || '[UNKNOWN]'}
                 </div>
               </div>
               
@@ -150,10 +150,10 @@ export default function HomePage() {
                   ENTITIES: {LAB_ENTITIES.length} ACTIVE
                 </TerminalLine>
                 <TerminalLine delay={400}>
-                  CURRENT OPERATOR: <span style={{ color: currentEntity.color }}>{currentEntity.name}</span>
+                  CURRENT OPERATOR: <span style={{ color: currentEntity?.color || '#ffffff' }}>{currentEntity?.name || '[UNKNOWN]'}</span>
                 </TerminalLine>
                 <TerminalLine delay={600}>
-                  ROLE: {currentEntity.role}
+                  ROLE: {currentEntity?.role || '[UNKNOWN]'}
                 </TerminalLine>
                 <TerminalLine delay={800} prefix="$">
                   <span className="text-yellow-400">exec</span> multipass.labs.interface<TerminalCursor />

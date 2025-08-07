@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './card';
 import { EntitySignature } from './entity-signature';
 import { formatPrice, cn } from '@/lib/utils';
 import { getEntityById, getEntityCSSVars } from '@/lib/entities';
+import { useTranslations } from 'next-intl';
 
 interface ProductCardProps {
   id: string;
@@ -32,13 +33,14 @@ export function ProductCard({
   locale,
   className
 }: ProductCardProps) {
+  const t = useTranslations('shop');
   const entity = entityId ? getEntityById(entityId) : null;
   
   const cssVars = entity ? getEntityCSSVars(entity) : {};
   const entityColor = entity?.color || '#666666';
 
   return (
-    <Link href={`/${locale}/shop/product/${id}`}>
+    <Link href={`/${locale}/shop/product/${id}` as any}>
       <Card 
         className={cn(
           'group transition-all duration-300 hover:shadow-lg overflow-hidden',
@@ -57,7 +59,7 @@ export function ProductCard({
         <div className="relative aspect-square overflow-hidden">
           {images.length > 0 ? (
             <Image
-              src={images[0]}
+              src={images[0] || '/placeholder.jpg'}
               alt={title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -78,18 +78,20 @@ export function useRouteLoading() {
       // For Next.js App Router, we need to observe navigation differently
       const observer = new MutationObserver(() => {
         // Check if URL changed
-        if (window.location.href !== observer.lastUrl) {
+        const lastUrl = (observer as any).lastUrl;
+        if (window.location.href !== lastUrl) {
           handleStart();
-          observer.lastUrl = window.location.href;
+          (observer as any).lastUrl = window.location.href;
           setTimeout(handleComplete, 500);
         }
       });
 
-      observer.lastUrl = window.location.href;
+      (observer as any).lastUrl = window.location.href;
       observer.observe(document.body, { childList: true, subtree: true });
 
       return () => observer.disconnect();
     }
+    return undefined;
   }, []);
 
   return isChanging;
@@ -143,7 +145,7 @@ export function useLazyLoad<T extends HTMLElement = HTMLDivElement>() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry && entry.isIntersecting) {
           setIsVisible(true);
           observer.disconnect();
         }

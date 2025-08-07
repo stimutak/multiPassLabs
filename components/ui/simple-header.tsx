@@ -32,7 +32,7 @@ export function SimpleHeader() {
     return () => clearInterval(interval);
   }, []);
   
-  const currentEntity = LAB_ENTITIES[entityIndex];
+  const currentEntity = LAB_ENTITIES[entityIndex] || LAB_ENTITIES[0];
   
   
   return (
@@ -70,8 +70,8 @@ export function SimpleHeader() {
         
         {/* Right - Entity & Time */}
         <div className="flex items-center gap-4">
-          <span className="hidden md:inline" style={{ color: currentEntity.color }}>
-            {currentEntity.signature}
+          <span className="hidden md:inline" style={{ color: currentEntity?.color || '#ffffff' }}>
+            {currentEntity?.signature || '[UNKNOWN]'}
           </span>
           <span className="text-green-400/40 hidden sm:inline">|</span>
           <span className="text-green-400/60">

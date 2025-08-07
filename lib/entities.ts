@@ -110,7 +110,8 @@ export const LAB_ENTITIES: LabEntity[] = [
  * Get a random lab entity
  */
 export function getRandomEntity(): LabEntity {
-  return LAB_ENTITIES[Math.floor(Math.random() * LAB_ENTITIES.length)] || LAB_ENTITIES[0];
+  const randomIndex = Math.floor(Math.random() * LAB_ENTITIES.length);
+  return LAB_ENTITIES[randomIndex] || LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!;
 }
 
 /**

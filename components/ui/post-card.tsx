@@ -38,7 +38,7 @@ export function PostCard({
   const cssVars = getEntityCSSVars(entity);
 
   return (
-    <Link href={`/${locale}/blog/${slug}`}>
+    <Link href={`/${locale}/blog/${slug}` as any}>
       <Card 
         className={cn(
           'group transition-all duration-300 hover:shadow-lg',
