@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(www\.)?multipass\.labs$ [NC]
+RewriteRule ^(.*)$ https://multipasslabs-git-master-stimutaks-projects.vercel.app/$1 [R=301,L]
