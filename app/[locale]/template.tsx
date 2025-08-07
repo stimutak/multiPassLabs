@@ -10,19 +10,14 @@ export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check if intro has been shown this session
     const introShown = sessionStorage.getItem('introShown');
-    console.log('Template mounted, introShown:', introShown);
     if (!introShown) {
-      console.log('Showing intro on first visit');
       setShowIntro(true);
     }
 
     // Add keyboard shortcut to replay intro (Ctrl/Cmd + Shift + I)
     const handleKeyPress = (e: KeyboardEvent) => {
-      console.log('Key pressed:', e.key, 'Meta:', e.metaKey, 'Ctrl:', e.ctrlKey, 'Shift:', e.shiftKey);
-      
       // Try multiple key combinations
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
-        console.log('Replay shortcut triggered!');
         e.preventDefault();
         sessionStorage.removeItem('introShown');
         setShowIntro(true);
@@ -34,13 +29,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleIntroComplete = () => {
-    console.log('Intro completed');
     setShowIntro(false);
     sessionStorage.setItem('introShown', 'true');
   };
 
   const handleReplayIntro = () => {
-    console.log('Manual replay triggered');
     sessionStorage.removeItem('introShown');
     setShowIntro(true);
   };

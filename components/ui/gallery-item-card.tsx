@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './card';
 import { EntitySignature } from './entity-signature';
 import { formatDate, cn } from '@/lib/utils';
 import { getEntityById, getEntityCSSVars } from '@/lib/entities';
-import { useTranslations } from 'next-intl';
 
 interface GalleryItemCardProps {
   id: string;
@@ -21,7 +20,7 @@ interface GalleryItemCardProps {
 }
 
 export function GalleryItemCard({
-  id,
+  id: _id,
   title,
   description,
   imageUrl,
@@ -34,7 +33,6 @@ export function GalleryItemCard({
   locale,
   className
 }: GalleryItemCardProps) {
-  const t = useTranslations('gallery');
   const entity = getEntityById(entityId);
   
   if (!entity) {

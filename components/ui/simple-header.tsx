@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { LAB_ENTITIES } from '@/lib/entities';
 
 export function SimpleHeader() {
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const [currentTime, setCurrentTime] = useState('');
   const [entityIndex, setEntityIndex] = useState(0);
   
@@ -34,10 +34,6 @@ export function SimpleHeader() {
   
   const currentEntity = LAB_ENTITIES[entityIndex];
   
-  // Debug log
-  useEffect(() => {
-    console.log('Current pathname:', pathname);
-  }, [pathname]);
   
   return (
     <header className="fixed top-0 w-full z-40 bg-black border-b border-green-500/20">

@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './card';
 import { EntitySignature } from './entity-signature';
 import { formatPrice, cn } from '@/lib/utils';
 import { getEntityById, getEntityCSSVars } from '@/lib/entities';
-import { useTranslations } from 'next-intl';
 
 interface ProductCardProps {
   id: string;
@@ -26,14 +25,13 @@ export function ProductCard({
   description,
   price,
   images,
-  categoryId,
+  categoryId: _categoryId,
   entityId,
   featured = false,
   available = true,
   locale,
   className
 }: ProductCardProps) {
-  const t = useTranslations('shop');
   const entity = entityId ? getEntityById(entityId) : null;
   
   const cssVars = entity ? getEntityCSSVars(entity) : {};
@@ -126,9 +124,9 @@ export function ProductCard({
           </div>
           
           {/* Entity Signature */}
-          {entity && (
+          {entity && entityId && (
             <EntitySignature 
-              entityId={entityId!} 
+              entityId={entityId} 
               variant="compact"
             />
           )}
@@ -166,7 +164,6 @@ export function ProductCard({
             onClick={(e) => {
               e.preventDefault();
               // Add to cart logic would go here
-              console.log('Add to cart:', id);
             }}
           >
             {available ? t('addToCart') : t('unavailable')}

@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(_credentials) {
         // TODO: Implement user authentication logic
         return null;
       }

@@ -1,6 +1,5 @@
 import { getEntityById, formatEntitySignature, getEntityCSSVars, glitchText } from '@/lib/entities';
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
 
 interface EntitySignatureProps {
   entityId: string;
@@ -15,7 +14,6 @@ export function EntitySignature({
   showGlitch = false,
   className 
 }: EntitySignatureProps) {
-  const t = useTranslations('entities');
   const entity = getEntityById(entityId);
 
   if (!entity) {

@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './card';
 import { EntitySignature } from './entity-signature';
 import { formatDate, cn } from '@/lib/utils';
 import { getEntityById, getEntityCSSVars } from '@/lib/entities';
-import { useTranslations } from 'next-intl';
 
 interface PostCardProps {
   id: string;
@@ -19,7 +18,7 @@ interface PostCardProps {
 }
 
 export function PostCard({
-  id,
+  id: _id,
   title,
   excerpt,
   entityId,
@@ -30,7 +29,6 @@ export function PostCard({
   locale,
   className
 }: PostCardProps) {
-  const t = useTranslations('blog');
   const entity = getEntityById(entityId);
   
   if (!entity) {

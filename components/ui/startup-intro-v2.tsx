@@ -12,7 +12,7 @@ import {
   playTypingSound,
   toggleAudioMute
 } from '@/lib/audio/glitch-audio';
-import { LAB_ENTITIES, formatEntitySignature, glitchText } from '@/lib/entities';
+import { LAB_ENTITIES, glitchText } from '@/lib/entities';
 
 // Enhanced typewriter with glitch capability
 function GlitchTypewriter({ 
@@ -31,7 +31,6 @@ function GlitchTypewriter({
   const [glitchActive, setGlitchActive] = useState(false);
 
   useEffect(() => {
-    console.log('GlitchTypewriter started for:', text.substring(0, 20) + '...');
     let index = 0;
     const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`█▓▒░';
     
@@ -85,28 +84,6 @@ function GlitchTypewriter({
   );
 }
 
-// Entity signature display
-function EntitySignature({ entity, delay = 0 }: { entity: any; delay?: number }) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  if (!visible) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="font-mono text-xs mt-1"
-      style={{ color: entity.color }}
-    >
-      {formatEntitySignature(entity)} <span className="text-green-400/50">// {entity.role}</span>
-    </motion.div>
-  );
-}
 
 // Enhanced ASCII Logo with glitch
 function GlitchAsciiLogo() {
@@ -268,8 +245,6 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
   };
 
   useEffect(() => {
-    console.log('StartupIntroV2 mounted, initial phase:', phase);
-    
     // Add click/key listeners for audio initialization
     window.addEventListener('click', handleUserInteraction);
     window.addEventListener('keydown', handleUserInteraction);
@@ -282,30 +257,25 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
   
   // Phase progression
   useEffect(() => {
-    console.log('Phase changed to:', phase);
     const timers: NodeJS.Timeout[] = [];
     
     if (phase === 'boot') {
       if (audioEnabled) playBootSound();
       timers.push(setTimeout(() => {
-        console.log('Transitioning to entities phase');
         setPhase('entities');
       }, 1500));
     } else if (phase === 'entities') {
       if (audioEnabled) playSystemCheckSound();
       timers.push(setTimeout(() => {
-        console.log('Transitioning to logo phase');
         setPhase('logo');
       }, 4000));
     } else if (phase === 'logo') {
       if (audioEnabled) playGlitchSound();
       timers.push(setTimeout(() => {
-        console.log('Transitioning to ready phase');
         setPhase('ready');
       }, 3000));
     } else if (phase === 'ready') {
       timers.push(setTimeout(() => {
-        console.log('Completing intro');
         onComplete();
       }, 1500));
     }
