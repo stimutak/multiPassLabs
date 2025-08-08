@@ -179,7 +179,7 @@ export default function HomePage() {
     <>
       {!showLogo && <SimpleHeader currentEntity={currentEntity} />}
       
-      <main className="relative min-h-screen bg-black pt-12">
+      <main className="relative min-h-screen bg-black pt-20 md:pt-12">
         {/* Show logo first */}
         {showLogo && (
           <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
