@@ -311,10 +311,11 @@ export class HexWaterfallAnimation implements EntityAnimation {
     // Initialize hex columns
     const fontSize = 14;
     const cols = Math.floor(this.canvas.width / (fontSize * 2));
+    const canvasHeight = this.canvas.height;
     
-    this.columns = Array.from({ length: cols }, (_, i) => ({
+    this.columns = Array.from({ length: cols }, () => ({
       chars: this.generateHexString(),
-      y: Math.random() * -this.canvas.height,
+      y: Math.random() * -canvasHeight,
       speed: Math.random() * 2 + 0.5,
       opacity: Math.random() * 0.5 + 0.1
     }));
