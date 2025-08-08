@@ -393,7 +393,11 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
                 className="flex flex-col items-center"
                 style={{ display: 'flex' }}
               >
-                <GlitchAsciiLogo />
+                <img
+                  src="/crisp-logo.png"
+                  alt="MultiPass Labs logo"
+                  className="w-40 h-40 mb-4"
+                />
                 <motion.div 
                   className="mt-6 text-xs"
                   style={{ color: '#4ade80' }}
