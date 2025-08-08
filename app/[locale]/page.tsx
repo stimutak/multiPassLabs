@@ -3,7 +3,7 @@
 import { SimpleHeader } from '@/components/ui/simple-header';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LAB_ENTITIES, getRandomEntity, glitchText, getEntityCSSVars } from '@/lib/entities';
+import { LAB_ENTITIES, getRandomEntity, glitchText } from '@/lib/entities';
 import { motion } from 'framer-motion';
 import { EntityAnimationBackground } from '@/components/backgrounds/entity-animations';
 
@@ -287,11 +287,7 @@ export default function HomePage() {
                 <Link href="/en/gallery" className="group">
                   <div className="bg-black/50 border rounded p-4 transition-all duration-300"
                        style={{ 
-                         borderColor: `${currentEntity?.color}30`,
-                         ':hover': { 
-                           borderColor: currentEntity?.color,
-                           backgroundColor: `${currentEntity?.color}10`
-                         }
+                         borderColor: `${currentEntity?.color}30`
                        }}
                        onMouseEnter={(e) => {
                          e.currentTarget.style.borderColor = currentEntity?.color || '';
