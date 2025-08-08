@@ -3,8 +3,9 @@
 import { SimpleHeader } from '@/components/ui/simple-header';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LAB_ENTITIES, getRandomEntity, glitchText } from '@/lib/entities';
+import { LAB_ENTITIES, getRandomEntity, glitchText, getEntityCSSVars } from '@/lib/entities';
 import { motion } from 'framer-motion';
+import { EntityAnimationBackground } from '@/components/backgrounds/entity-animations';
 
 // Terminal cursor component
 function TerminalCursor() {
@@ -36,8 +37,8 @@ function GlitchTextDisplay({ text, className = '' }: { text: string; className?:
   return <span className={className}>{glitched}</span>;
 }
 
-// Terminal line component
-function TerminalLine({ children, prefix = '>', delay = 0 }: { children: React.ReactNode; prefix?: string; delay?: number }) {
+// Terminal line component with entity-based colors
+function TerminalLine({ children, prefix = '>', delay = 0, color = '#00f4ff' }: { children: React.ReactNode; prefix?: string; delay?: number; color?: string }) {
   const [visible, setVisible] = useState(false);
   
   useEffect(() => {
@@ -51,19 +52,34 @@ function TerminalLine({ children, prefix = '>', delay = 0 }: { children: React.R
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      className="font-mono text-green-400 text-sm mb-2"
+      className="font-mono text-sm mb-2"
+      style={{ color }}
     >
-      <span className="text-green-500">{prefix}</span> {children}
+      <span style={{ color: `${color}cc`, filter: 'brightness(1.2)' }}>{prefix}</span> {children}
     </motion.div>
   );
 }
 
 export default function HomePage() {
-  const [currentEntity, setCurrentEntity] = useState(LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!);
+  // Start with an entity that has an implemented animation
+  const initialEntity = LAB_ENTITIES.find(e => e.animation === 'oscilloscope') || LAB_ENTITIES[0]!;
+  const [currentEntity, setCurrentEntity] = useState(initialEntity);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [showLogo, setShowLogo] = useState(true);
   const [contentRevealed, setContentRevealed] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
+  
+  // Get current animation type - default to one of our implemented ones
+  const getAnimationType = () => {
+    if (currentEntity?.animation === 'oscilloscope' || 
+        currentEntity?.animation === 'circuitTraces' || 
+        currentEntity?.animation === 'hexWaterfall') {
+      return currentEntity.animation;
+    }
+    // Default fallback for entities without implemented animations yet
+    return 'oscilloscope';
+  };
+  const animationType = getAnimationType();
   
   useEffect(() => {
     // Initial logo display for 2 seconds
@@ -91,8 +107,19 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    // Only cycle between entities that have implemented animations
+    const entitiesWithAnimations = LAB_ENTITIES.filter(e => 
+      e.animation === 'oscilloscope' || 
+      e.animation === 'circuitTraces' || 
+      e.animation === 'hexWaterfall'
+    );
+    
     const interval = setInterval(() => {
-      setCurrentEntity(getRandomEntity());
+      const randomIndex = Math.floor(Math.random() * entitiesWithAnimations.length);
+      const newEntity = entitiesWithAnimations[randomIndex];
+      if (newEntity) {
+        setCurrentEntity(newEntity);
+      }
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -181,10 +208,11 @@ export default function HomePage() {
 
         {/* Main content with strobe reveal */}
         <div className={`${contentRevealed ? 'opacity-100' : 'opacity-0'} ${glitchActive ? 'animate-glitch' : ''} transition-opacity duration-100`}>
-          {/* Matrix rain background */}
-          <div className="fixed inset-0 opacity-10">
-            <MatrixRainBackground />
-          </div>
+          {/* Entity-based animation background */}
+          <EntityAnimationBackground 
+            entityColor={currentEntity?.color || '#00f4ff'} 
+            animationType={animationType as any}
+          />
           
           {/* Scanlines */}
           <div className="fixed inset-0 pointer-events-none">
@@ -195,21 +223,31 @@ export default function HomePage() {
           <section className="relative min-h-screen flex items-center justify-center p-8">
           <div className="relative z-10 w-full max-w-6xl">
             {/* Terminal Window */}
-            <div className="bg-black/80 border border-green-500/30 rounded-lg p-8 backdrop-blur-sm">
+            <div className="bg-black/90 border rounded-lg p-8 backdrop-blur-sm transition-all duration-500"
+                 style={{ 
+                   borderColor: `${currentEntity?.color}40`,
+                   boxShadow: `0 0 30px ${currentEntity?.color}20`
+                 }}>
               {/* Terminal Header */}
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-green-500/20">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b transition-all duration-500"
+                   style={{ borderColor: `${currentEntity?.color}20` }}>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
-                <div className="font-mono text-xs text-green-400/60">
+                <div className="font-mono text-xs transition-all duration-500"
+                     style={{ color: `${currentEntity?.color}99` }}>
                   terminal@multipass.labs ~ {currentEntity?.signature || '[UNKNOWN]'}
                 </div>
               </div>
               
               {/* ASCII Logo */}
-              <pre className="font-mono text-green-400 text-xs mb-8 leading-tight">
+              <pre className="font-mono text-xs mb-8 leading-tight transition-all duration-500"
+                   style={{ 
+                     color: currentEntity?.color,
+                     textShadow: `0 0 10px ${currentEntity?.color}66`
+                   }}>
 {`
 ╔══════════════════════════════════════════════╗
 ║                                              ║
@@ -228,28 +266,31 @@ export default function HomePage() {
               
               {/* Terminal Content */}
               <div className="space-y-2 mb-8">
-                <TerminalLine delay={0}>
+                <TerminalLine delay={0} color={currentEntity?.color}>
                   <GlitchTextDisplay text="COLLECTIVE STATUS: ONLINE" />
                 </TerminalLine>
-                <TerminalLine delay={200}>
+                <TerminalLine delay={200} color={currentEntity?.color}>
                   ENTITIES: {LAB_ENTITIES.length} ACTIVE
                 </TerminalLine>
-                <TerminalLine delay={400}>
+                <TerminalLine delay={400} color={currentEntity?.color}>
                   CURRENT OPERATOR: <span style={{ color: currentEntity?.color || '#ffffff' }}>{currentEntity?.name || '[UNKNOWN]'}</span>
                 </TerminalLine>
-                <TerminalLine delay={600}>
+                <TerminalLine delay={600} color={currentEntity?.color}>
                   ROLE: {currentEntity?.role || '[UNKNOWN]'}
                 </TerminalLine>
-                <TerminalLine delay={800} prefix="$">
+                <TerminalLine delay={800} prefix="$" color={currentEntity?.color}>
                   <span className="text-yellow-400">exec</span> multipass.labs.interface<TerminalCursor />
                 </TerminalLine>
               </div>
               
               {/* Command History */}
-              <div className="border-t border-green-500/20 pt-4 mb-6">
-                <div className="font-mono text-xs text-green-400/40 mb-2"># Recent Activity</div>
+              <div className="border-t pt-4 mb-6 transition-all duration-500"
+                   style={{ borderColor: `${currentEntity?.color}20` }}>
+                <div className="font-mono text-xs mb-2" 
+                     style={{ color: `${currentEntity?.color}66` }}># Recent Activity</div>
                 {commandHistory.map((cmd, i) => (
-                  <div key={i} className="font-mono text-xs text-green-400/60 mb-1">
+                  <div key={i} className="font-mono text-xs mb-1"
+                       style={{ color: `${currentEntity?.color}99` }}>
                     [{new Date().toLocaleTimeString()}] {cmd}
                   </div>
                 ))}
@@ -258,33 +299,70 @@ export default function HomePage() {
               {/* Navigation Commands */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Link href="/en/gallery" className="group">
-                  <div className="bg-black border border-green-500/30 rounded p-4 hover:border-green-400 hover:bg-green-500/5 transition-all">
-                    <div className="font-mono text-green-400 text-sm mb-2">
-                      $ <span className="text-yellow-400">cd</span> /gallery
+                  <div className="bg-black/50 border rounded p-4 transition-all duration-300"
+                       style={{ 
+                         borderColor: `${currentEntity?.color}30`,
+                         ':hover': { 
+                           borderColor: currentEntity?.color,
+                           backgroundColor: `${currentEntity?.color}10`
+                         }
+                       }}
+                       onMouseEnter={(e) => {
+                         e.currentTarget.style.borderColor = currentEntity?.color || '';
+                         e.currentTarget.style.backgroundColor = `${currentEntity?.color}10`;
+                       }}
+                       onMouseLeave={(e) => {
+                         e.currentTarget.style.borderColor = `${currentEntity?.color}30`;
+                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                       }}>
+                    <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
+                      $ <span style={{ color: '#ffe95c' }}>cd</span> /gallery
                     </div>
-                    <div className="font-mono text-xs text-green-400/60">
+                    <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}99` }}>
                       // Interactive visual experiments
                     </div>
                   </div>
                 </Link>
                 
                 <Link href="/en/shop" className="group">
-                  <div className="bg-black border border-green-500/30 rounded p-4 hover:border-green-400 hover:bg-green-500/5 transition-all">
-                    <div className="font-mono text-green-400 text-sm mb-2">
-                      $ <span className="text-yellow-400">cd</span> /shop
+                  <div className="bg-black/50 border rounded p-4 transition-all duration-300"
+                       style={{ 
+                         borderColor: `${currentEntity?.color}30`
+                       }}
+                       onMouseEnter={(e) => {
+                         e.currentTarget.style.borderColor = currentEntity?.color || '';
+                         e.currentTarget.style.backgroundColor = `${currentEntity?.color}10`;
+                       }}
+                       onMouseLeave={(e) => {
+                         e.currentTarget.style.borderColor = `${currentEntity?.color}30`;
+                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                       }}>
+                    <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
+                      $ <span style={{ color: '#ffe95c' }}>cd</span> /shop
                     </div>
-                    <div className="font-mono text-xs text-green-400/60">
+                    <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}99` }}>
                       // Digital artifacts marketplace
                     </div>
                   </div>
                 </Link>
                 
                 <Link href="/en/music" className="group">
-                  <div className="bg-black border border-green-500/30 rounded p-4 hover:border-green-400 hover:bg-green-500/5 transition-all">
-                    <div className="font-mono text-green-400 text-sm mb-2">
-                      $ <span className="text-yellow-400">cd</span> /music
+                  <div className="bg-black/50 border rounded p-4 transition-all duration-300"
+                       style={{ 
+                         borderColor: `${currentEntity?.color}30`
+                       }}
+                       onMouseEnter={(e) => {
+                         e.currentTarget.style.borderColor = currentEntity?.color || '';
+                         e.currentTarget.style.backgroundColor = `${currentEntity?.color}10`;
+                       }}
+                       onMouseLeave={(e) => {
+                         e.currentTarget.style.borderColor = `${currentEntity?.color}30`;
+                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                       }}>
+                    <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
+                      $ <span style={{ color: '#ffe95c' }}>cd</span> /music
                     </div>
-                    <div className="font-mono text-xs text-green-400/60">
+                    <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}99` }}>
                       // Audio-reactive experiences
                     </div>
                   </div>
@@ -295,52 +373,56 @@ export default function HomePage() {
           </section>
 
           {/* System Info Section */}
-        <section className="relative py-20 px-8 border-t border-green-500/20">
+        <section className="relative py-20 px-8 border-t transition-all duration-500"
+                 style={{ borderColor: `${currentEntity?.color}20` }}>
           <div className="max-w-6xl mx-auto">
-            <div className="font-mono text-green-400">
+            <div className="font-mono" style={{ color: currentEntity?.color }}>
               <h2 className="text-2xl mb-8">
                 <GlitchTextDisplay text="SYSTEM MODULES" />
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Module Cards */}
-                <div className="border border-green-500/20 rounded p-6 bg-black/50">
-                  <div className="text-green-400 mb-4">
+                <div className="border rounded p-6 bg-black/50 transition-all duration-500"
+                     style={{ borderColor: `${currentEntity?.color}20` }}>
+                  <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">▓▓▓</span>
                   </div>
                   <h3 className="text-lg mb-2">neural.network</h3>
-                  <p className="text-xs text-green-400/60 leading-relaxed">
+                  <p className="text-xs leading-relaxed" style={{ color: `${currentEntity?.color}99` }}>
                     Collective consciousness mesh for distributed creative processing. 
                     Entity-driven art generation protocols.
                   </p>
                   <div className="mt-4 text-xs">
-                    <span className="text-yellow-400">STATUS:</span> <span className="text-green-400">ACTIVE</span>
+                    <span style={{ color: '#ffe95c' }}>STATUS:</span> <span style={{ color: currentEntity?.color }}>ACTIVE</span>
                   </div>
                 </div>
                 
-                <div className="border border-green-500/20 rounded p-6 bg-black/50">
-                  <div className="text-green-400 mb-4">
+                <div className="border rounded p-6 bg-black/50 transition-all duration-500"
+                     style={{ borderColor: `${currentEntity?.color}20` }}>
+                  <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">█▓█</span>
                   </div>
                   <h3 className="text-lg mb-2">quantum.tunnel</h3>
-                  <p className="text-xs text-green-400/60 leading-relaxed">
+                  <p className="text-xs leading-relaxed" style={{ color: `${currentEntity?.color}99` }}>
                     Interdimensional data streams. Reality mesh compilation and glitch aesthetics.
                   </p>
                   <div className="mt-4 text-xs">
-                    <span className="text-yellow-400">STATUS:</span> <span className="text-green-400">SYNCING</span>
+                    <span style={{ color: '#ffe95c' }}>STATUS:</span> <span style={{ color: currentEntity?.color }}>SYNCING</span>
                   </div>
                 </div>
                 
-                <div className="border border-green-500/20 rounded p-6 bg-black/50">
-                  <div className="text-green-400 mb-4">
+                <div className="border rounded p-6 bg-black/50 transition-all duration-500"
+                     style={{ borderColor: `${currentEntity?.color}20` }}>
+                  <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">░▒▓</span>
                   </div>
                   <h3 className="text-lg mb-2">glitch.shaders</h3>
-                  <p className="text-xs text-green-400/60 leading-relaxed">
+                  <p className="text-xs leading-relaxed" style={{ color: `${currentEntity?.color}99` }}>
                     Reality distortion fields. Experimental visual corruption engines.
                   </p>
                   <div className="mt-4 text-xs">
-                    <span className="text-yellow-400">STATUS:</span> <span className="text-green-400">LOADED</span>
+                    <span style={{ color: '#ffe95c' }}>STATUS:</span> <span style={{ color: currentEntity?.color }}>LOADED</span>
                   </div>
                 </div>
               </div>
@@ -349,9 +431,10 @@ export default function HomePage() {
           </section>
           
           {/* Entity Signatures Footer */}
-        <footer className="relative border-t border-green-500/20 py-8 px-8">
+        <footer className="relative border-t py-8 px-8 transition-all duration-500"
+                style={{ borderColor: `${currentEntity?.color}20` }}>
           <div className="max-w-6xl mx-auto">
-            <div className="font-mono text-xs text-green-400/40">
+            <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}66` }}>
               <div className="mb-4">// Active Entity Signatures</div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {LAB_ENTITIES.map(entity => (
@@ -372,73 +455,3 @@ export default function HomePage() {
   );
 }
 
-// Matrix Rain Background Component
-function MatrixRainBackground() {
-  useEffect(() => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    
-    const container = document.getElementById('matrix-container');
-    if (!container) return;
-    
-    container.appendChild(canvas);
-    
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    
-    const chars = 'アイウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]()_+-=';
-    const charArray = chars.split('');
-    const fontSize = 12;
-    const columns = canvas.width / fontSize;
-    const drops: number[] = [];
-    
-    for (let i = 0; i < columns; i++) {
-      drops[i] = Math.floor(Math.random() * -100);
-    }
-    
-    const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      ctx.fillStyle = '#00ff00';
-      ctx.font = fontSize + 'px monospace';
-      
-      for (let i = 0; i < drops.length; i++) {
-        const text = charArray[Math.floor(Math.random() * charArray.length)];
-        const dropValue = drops[i];
-        if (text && dropValue !== undefined) {
-          ctx.fillText(text, i * fontSize, dropValue * fontSize);
-        }
-        
-        if (dropValue !== undefined && dropValue * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        } else if (dropValue !== undefined) {
-          drops[i] = dropValue + 1;
-        }
-      }
-    };
-    
-    const interval = setInterval(draw, 35);
-    
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', resizeCanvas);
-      canvas.remove();
-    };
-  }, []);
-  
-  return <div id="matrix-container" className="absolute inset-0" />;
-}

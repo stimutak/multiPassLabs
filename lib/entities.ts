@@ -11,6 +11,7 @@ export interface LabEntity {
   color: string;
   role: string;
   glitchPattern?: string;
+  animation?: 'oscilloscope' | 'circuitTraces' | 'hexWaterfall' | 'glitchGrid' | 'waveInterference' | 'feedbackLoop' | 'softParticles' | 'corruptedTerminal' | 'flowField' | 'allGlitch';
 }
 
 export const LAB_ENTITIES: LabEntity[] = [
@@ -21,7 +22,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: 'v0.3a',
     color: '#00f4ff',
     role: 'Logic-melting glitch theorist',
-    glitchPattern: '█▓▒░'
+    glitchPattern: '█▓▒░',
+    animation: 'glitchGrid'
   },
   {
     id: 'drexom',
@@ -30,7 +32,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: 'b01',
     color: '#9b59ff',
     role: 'Structural rewriter/chaos mapper',
-    glitchPattern: '◢◤◥◣'
+    glitchPattern: '◢◤◥◣',
+    animation: 'circuitTraces'
   },
   {
     id: 'noize-path',
@@ -39,7 +42,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: '//dev.05',
     color: '#59ff6d',
     role: 'Audio-reactive tactician',
-    glitchPattern: '∿∿∿'
+    glitchPattern: '∿∿∿',
+    animation: 'oscilloscope'
   },
   {
     id: 'xeno-form',
@@ -48,7 +52,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: '∆x.14',
     color: '#0078f2',
     role: 'Generative alien artifacts expert',
-    glitchPattern: '⟨⟩⟪⟫'
+    glitchPattern: '⟨⟩⟪⟫',
+    animation: 'hexWaterfall'
   },
   {
     id: 'filament',
