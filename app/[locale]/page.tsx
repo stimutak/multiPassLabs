@@ -73,7 +73,10 @@ export default function HomePage() {
   const getAnimationType = () => {
     if (currentEntity?.animation === 'oscilloscope' || 
         currentEntity?.animation === 'circuitTraces' || 
-        currentEntity?.animation === 'hexWaterfall') {
+        currentEntity?.animation === 'hexWaterfall' ||
+        currentEntity?.animation === 'glitchGrid' ||
+        currentEntity?.animation === 'softParticles' ||
+        currentEntity?.animation === 'flowField') {
       return currentEntity.animation;
     }
     // Default fallback for entities without implemented animations yet
@@ -111,7 +114,10 @@ export default function HomePage() {
     const entitiesWithAnimations = LAB_ENTITIES.filter(e => 
       e.animation === 'oscilloscope' || 
       e.animation === 'circuitTraces' || 
-      e.animation === 'hexWaterfall'
+      e.animation === 'hexWaterfall' ||
+      e.animation === 'glitchGrid' ||
+      e.animation === 'softParticles' ||
+      e.animation === 'flowField'
     );
     
     const interval = setInterval(() => {
@@ -152,7 +158,7 @@ export default function HomePage() {
 
   return (
     <>
-      {!showLogo && <SimpleHeader />}
+      {!showLogo && <SimpleHeader currentEntity={currentEntity} />}
       
       <main className="relative min-h-screen bg-black pt-12">
         {/* Show logo first */}

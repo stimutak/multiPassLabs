@@ -380,10 +380,336 @@ export class HexWaterfallAnimation implements EntityAnimation {
   }
 }
 
+// === GLITCH GRID ANIMATION (nU11.form) ===
+export class GlitchGridAnimation implements EntityAnimation {
+  name = 'glitchGrid';
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private animationId: number | null = null;
+  private color: string = '#00f4ff';
+  private grid: Array<Array<{ char: string; opacity: number; glitching: boolean }>> = [];
+  private glitchTimer = 0;
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.color = color;
+    
+    this.resize();
+    this.generateGrid();
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    if (!this.canvas) return;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.generateGrid();
+  };
+
+  private generateGrid() {
+    if (!this.canvas) return;
+    
+    const cellSize = 20;
+    const cols = Math.ceil(this.canvas.width / cellSize);
+    const rows = Math.ceil(this.canvas.height / cellSize);
+    
+    const chars = '█▓▒░╔╗╚╝║═┌┐└┘│─┼╬';
+    this.grid = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => ({
+        char: chars[Math.floor(Math.random() * chars.length)],
+        opacity: Math.random() * 0.3,
+        glitching: false
+      }))
+    );
+  }
+
+  animate = () => {
+    if (!this.ctx || !this.canvas) return;
+    
+    // Clear canvas
+    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.ctx.font = '14px monospace';
+    
+    const cellSize = 20;
+    
+    // Update and draw grid
+    this.grid.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        // Random glitch chance
+        if (Math.random() > 0.995) {
+          cell.glitching = true;
+          cell.char = '█▓▒░'[Math.floor(Math.random() * 4)];
+          setTimeout(() => {
+            cell.glitching = false;
+            const chars = '█▓▒░╔╗╚╝║═┌┐└┘│─┼╬';
+            cell.char = chars[Math.floor(Math.random() * chars.length)];
+          }, 100);
+        }
+        
+        // Melting effect
+        if (this.glitchTimer % 60 === 0 && Math.random() > 0.98) {
+          cell.opacity = 1;
+          setTimeout(() => {
+            cell.opacity = Math.random() * 0.3;
+          }, 500);
+        }
+        
+        // Draw cell
+        const opacity = cell.glitching ? 1 : cell.opacity;
+        this.ctx!.fillStyle = this.color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
+        this.ctx!.fillText(cell.char, x * cellSize, y * cellSize);
+      });
+    });
+    
+    // Create wave effect
+    const waveY = Math.sin(this.glitchTimer * 0.02) * 10;
+    const waveRow = Math.floor((this.canvas.height / 2 + waveY) / cellSize);
+    if (this.grid[waveRow]) {
+      this.grid[waveRow].forEach(cell => {
+        cell.opacity = Math.min(1, cell.opacity + 0.1);
+      });
+    }
+    
+    this.glitchTimer++;
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
+// === SOFT PARTICLES ANIMATION (1r1s.fade) ===
+export class SoftParticlesAnimation implements EntityAnimation {
+  name = 'softParticles';
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private animationId: number | null = null;
+  private color: string = '#ffa4f9';
+  private particles: Array<{
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+    opacity: number;
+    life: number;
+  }> = [];
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.color = color;
+    
+    this.resize();
+    this.generateParticles();
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    if (!this.canvas) return;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  };
+
+  private generateParticles() {
+    if (!this.canvas) return;
+    
+    this.particles = Array.from({ length: 50 }, () => ({
+      x: Math.random() * this.canvas.width,
+      y: Math.random() * this.canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 30 + 10,
+      opacity: Math.random() * 0.3 + 0.1,
+      life: Math.random() * 100
+    }));
+  }
+
+  animate = () => {
+    if (!this.ctx || !this.canvas) return;
+    
+    // Fade effect
+    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // Update and draw particles
+    this.particles.forEach(particle => {
+      // Update position
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      particle.life += 0.5;
+      
+      // Soft floating effect
+      particle.vx += (Math.random() - 0.5) * 0.01;
+      particle.vy += (Math.random() - 0.5) * 0.01;
+      
+      // Fade in and out based on life
+      const lifeCycle = Math.sin(particle.life * 0.02);
+      particle.opacity = 0.2 * lifeCycle * lifeCycle;
+      
+      // Wrap around edges softly
+      if (particle.x < -particle.size) particle.x = this.canvas!.width + particle.size;
+      if (particle.x > this.canvas!.width + particle.size) particle.x = -particle.size;
+      if (particle.y < -particle.size) particle.y = this.canvas!.height + particle.size;
+      if (particle.y > this.canvas!.height + particle.size) particle.y = -particle.size;
+      
+      // Draw soft gradient particle
+      const gradient = this.ctx!.createRadialGradient(
+        particle.x, particle.y, 0,
+        particle.x, particle.y, particle.size
+      );
+      gradient.addColorStop(0, this.color + Math.floor(particle.opacity * 255).toString(16).padStart(2, '0'));
+      gradient.addColorStop(1, this.color + '00');
+      
+      this.ctx!.fillStyle = gradient;
+      this.ctx!.beginPath();
+      this.ctx!.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      this.ctx!.fill();
+    });
+    
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
+// === FLOW FIELD ANIMATION (NØD3//STATE) ===
+export class FlowFieldAnimation implements EntityAnimation {
+  name = 'flowField';
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private animationId: number | null = null;
+  private color: string = '#58d2bf';
+  private particles: Array<{
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    history: Array<{ x: number; y: number }>;
+  }> = [];
+  private time = 0;
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.color = color;
+    
+    this.resize();
+    this.generateParticles();
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    if (!this.canvas) return;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.generateParticles();
+  };
+
+  private generateParticles() {
+    if (!this.canvas) return;
+    
+    this.particles = Array.from({ length: 100 }, () => ({
+      x: Math.random() * this.canvas.width,
+      y: Math.random() * this.canvas.height,
+      vx: 0,
+      vy: 0,
+      history: []
+    }));
+  }
+
+  private getFlowVector(x: number, y: number): { x: number; y: number } {
+    // Perlin-like noise field simulation
+    const scale = 0.005;
+    const angle = (
+      Math.sin(x * scale + this.time * 0.01) * 
+      Math.cos(y * scale) + 
+      Math.sin((x + y) * scale * 0.5)
+    ) * Math.PI * 2;
+    
+    return {
+      x: Math.cos(angle) * 2,
+      y: Math.sin(angle) * 2
+    };
+  }
+
+  animate = () => {
+    if (!this.ctx || !this.canvas) return;
+    
+    // Fade effect
+    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.03)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.particles.forEach(particle => {
+      // Get flow vector at particle position
+      const flow = this.getFlowVector(particle.x, particle.y);
+      
+      // Update velocity based on flow field
+      particle.vx = particle.vx * 0.95 + flow.x * 0.05;
+      particle.vy = particle.vy * 0.95 + flow.y * 0.05;
+      
+      // Update position
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      
+      // Add to history
+      particle.history.push({ x: particle.x, y: particle.y });
+      if (particle.history.length > 20) {
+        particle.history.shift();
+      }
+      
+      // Wrap around edges
+      if (particle.x < 0) particle.x = this.canvas!.width;
+      if (particle.x > this.canvas!.width) particle.x = 0;
+      if (particle.y < 0) particle.y = this.canvas!.height;
+      if (particle.y > this.canvas!.height) particle.y = 0;
+      
+      // Draw particle trail
+      this.ctx!.strokeStyle = this.color + '40';
+      this.ctx!.lineWidth = 1;
+      this.ctx!.beginPath();
+      particle.history.forEach((point, i) => {
+        if (i === 0) {
+          this.ctx!.moveTo(point.x, point.y);
+        } else {
+          this.ctx!.lineTo(point.x, point.y);
+        }
+      });
+      this.ctx!.stroke();
+      
+      // Draw particle
+      this.ctx!.fillStyle = this.color + 'ff';
+      this.ctx!.fillRect(particle.x - 1, particle.y - 1, 2, 2);
+    });
+    
+    this.time++;
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
 // === ANIMATION MANAGER COMPONENT ===
 interface AnimationManagerProps {
   entityColor: string;
-  animationType: 'oscilloscope' | 'circuitTraces' | 'hexWaterfall';
+  animationType: 'oscilloscope' | 'circuitTraces' | 'hexWaterfall' | 'glitchGrid' | 'softParticles' | 'flowField';
 }
 
 export function EntityAnimationBackground({ entityColor, animationType }: AnimationManagerProps) {
@@ -413,6 +739,15 @@ export function EntityAnimationBackground({ entityColor, animationType }: Animat
         break;
       case 'hexWaterfall':
         newAnimation = new HexWaterfallAnimation();
+        break;
+      case 'glitchGrid':
+        newAnimation = new GlitchGridAnimation();
+        break;
+      case 'softParticles':
+        newAnimation = new SoftParticlesAnimation();
+        break;
+      case 'flowField':
+        newAnimation = new FlowFieldAnimation();
         break;
       default:
         newAnimation = new OscilloscopeAnimation();

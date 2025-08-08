@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LAB_ENTITIES } from '@/lib/entities';
+import { LabEntity } from '@/lib/entities';
 
-export function SimpleHeader() {
+interface SimpleHeaderProps {
+  currentEntity?: LabEntity;
+}
+
+export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
   const _pathname = usePathname();
   const [currentTime, setCurrentTime] = useState('');
-  const [entityIndex, setEntityIndex] = useState(0);
   
   useEffect(() => {
     const updateTime = () => {
@@ -25,14 +28,6 @@ export function SimpleHeader() {
     return () => clearInterval(interval);
   }, []);
   
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setEntityIndex(prev => (prev + 1) % LAB_ENTITIES.length);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-  
-  const currentEntity = LAB_ENTITIES[entityIndex] || LAB_ENTITIES[0];
   
   
   return (

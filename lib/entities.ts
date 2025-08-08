@@ -80,7 +80,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: '::OBSCURA',
     color: '#ffa4f9',
     role: 'Cinematic ghost of soft light',
-    glitchPattern: '░▒▓'
+    glitchPattern: '░▒▓',
+    animation: 'softParticles'
   },
   {
     id: 'ctrl-noir',
@@ -98,7 +99,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: '07_hz',
     color: '#58d2bf',
     role: 'Topological flow architect',
-    glitchPattern: '⌬⌬⌬'
+    glitchPattern: '⌬⌬⌬',
+    animation: 'flowField'
   },
   {
     id: 'multipass',
