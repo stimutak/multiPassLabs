@@ -13,6 +13,7 @@ import {
   toggleAudioMute
 } from '@/lib/audio/glitch-audio';
 import { LAB_ENTITIES, glitchText } from '@/lib/entities';
+import { logoVariants } from './logo-variants';
 
 // Enhanced typewriter with glitch capability
 function GlitchTypewriter({ 
@@ -87,45 +88,57 @@ function GlitchTypewriter({
 
 // Enhanced ASCII Logo with glitch
 function GlitchAsciiLogo() {
-  const [glitchLine, setGlitchLine] = useState(-1);
+  const [logoVariant, setLogoVariant] = useState(0);
+  const [glitchActive, setGlitchActive] = useState(false);
   
-  const logo = [
-    '╔══════════════════════════════════════════════╗',
-    '║                                              ║',
-    '║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓        ║',
-    '║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓        ║',
-    '║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓        ║',
-    '║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓        ║',
-    '║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓        ║',
-    '║   ╚═╝     ╚═╝╚═╝     ╚══════╝                ║',
-    '║                                              ║',
-    '║   M U L T I P A S S   L A B S   [v1.0.0]    ║',
-    '║                                              ║',
-    '╚══════════════════════════════════════════════╝'
-  ];
-
   useEffect(() => {
+    // Cycle through logo variants for glitch effect
     const interval = setInterval(() => {
-      setGlitchLine(Math.random() > 0.7 ? Math.floor(Math.random() * logo.length) : -1);
-    }, 200);
+      setGlitchActive(true);
+      setTimeout(() => {
+        setLogoVariant(prev => (prev + 1) % logoVariants.length);
+        setGlitchActive(false);
+      }, 50);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
+  const logo = logoVariants[logoVariant] || logoVariants[0];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      className="relative"
-    >
-      <pre className="font-mono text-xs leading-tight select-none" style={{ color: '#4ade80' }}>
-        {logo.map((line, i) => (
-          <div key={i} className={i === glitchLine ? 'text-red-500' : ''}>
-            {i === glitchLine ? glitchText(line, LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!) : line}
-          </div>
-        ))}
-      </pre>
-    </motion.div>
+    <div className="relative">
+      {/* Lightning effect during glitch */}
+      {glitchActive && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-white text-6xl animate-pulse">⚡</div>
+        </div>
+      )}
+      
+      <motion.pre
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ 
+          opacity: glitchActive ? [1, 0.2, 1, 0.5, 1] : 1, 
+          scale: glitchActive ? [1, 1.02, 0.98, 1.01, 1] : 1,
+          filter: glitchActive ? [
+            'hue-rotate(0deg) brightness(1)',
+            'hue-rotate(180deg) brightness(1.5)',
+            'hue-rotate(90deg) brightness(0.8)',
+            'hue-rotate(270deg) brightness(1.2)',
+            'hue-rotate(0deg) brightness(1)'
+          ] : 'hue-rotate(0deg) brightness(1)'
+        }}
+        transition={{ duration: glitchActive ? 0.05 : 0.3 }}
+        className="font-mono text-xs leading-tight select-none"
+        style={{ 
+          color: '#4ade80',
+          textShadow: glitchActive 
+            ? '0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00'
+            : '0 0 5px #00ff00'
+        }}
+      >
+        {logo}
+      </motion.pre>
+    </div>
   );
 }
 
@@ -231,6 +244,7 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
   const [phase, setPhase] = useState<'boot' | 'entities' | 'logo' | 'ready'>('boot');
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audioInitialized, setAudioInitialized] = useState(false);
+  const [logoKeyPressed, setLogoKeyPressed] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   
   // Initialize audio on first user interaction
@@ -244,6 +258,14 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
     }
   };
 
+  // Handle keypress during logo phase
+  const handleLogoKeyPress = () => {
+    if (phase === 'logo' && !logoKeyPressed) {
+      setLogoKeyPressed(true);
+      setPhase('ready');
+    }
+  };
+
   useEffect(() => {
     // Add click/key listeners for audio initialization
     window.addEventListener('click', handleUserInteraction);
@@ -254,6 +276,16 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
       window.removeEventListener('keydown', handleUserInteraction);
     };
   }, [audioInitialized]);
+
+  useEffect(() => {
+    // Add keypress listener for logo phase
+    const handleKeyDown = (e: KeyboardEvent) => {
+      handleUserInteraction();
+      handleLogoKeyPress();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [phase, logoKeyPressed]);
   
   // Phase progression
   useEffect(() => {
@@ -271,17 +303,21 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
       }, 4000));
     } else if (phase === 'logo') {
       if (audioEnabled) playGlitchSound();
-      timers.push(setTimeout(() => {
-        setPhase('ready');
-      }, 3000));
+      // Wait 5 seconds on logo unless key pressed
+      if (!logoKeyPressed) {
+        timers.push(setTimeout(() => {
+          setPhase('ready');
+        }, 5000));
+      }
     } else if (phase === 'ready') {
+      // Hold welcome screen longer (3 seconds)
       timers.push(setTimeout(() => {
         onComplete();
-      }, 1500));
+      }, 3000));
     }
     
     return () => timers.forEach(timer => clearTimeout(timer));
-  }, [phase, onComplete, audioEnabled]);
+  }, [phase, onComplete, audioEnabled, logoKeyPressed]);
 
   // Glitch audio generation (Richard Devine style)
   useEffect(() => {

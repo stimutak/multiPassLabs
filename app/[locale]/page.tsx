@@ -61,7 +61,35 @@ function TerminalLine({ children, prefix = '>', delay = 0 }: { children: React.R
 export default function HomePage() {
   const [currentEntity, setCurrentEntity] = useState(LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [showLogo, setShowLogo] = useState(true);
+  const [contentRevealed, setContentRevealed] = useState(false);
+  const [glitchActive, setGlitchActive] = useState(false);
   
+  useEffect(() => {
+    // Initial logo display for 2 seconds
+    const logoTimer = setTimeout(() => {
+      setShowLogo(false);
+      // Start glitch/strobe effect
+      setGlitchActive(true);
+      
+      // Strobe effect - flash content in
+      let strobeCount = 0;
+      const strobeInterval = setInterval(() => {
+        setContentRevealed(prev => !prev);
+        strobeCount++;
+        
+        // After 8 flashes (4 on/off cycles), stay on
+        if (strobeCount >= 8) {
+          clearInterval(strobeInterval);
+          setContentRevealed(true);
+          setGlitchActive(false);
+        }
+      }, 100); // Fast strobe effect
+    }, 2000);
+
+    return () => clearTimeout(logoTimer);
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentEntity(getRandomEntity());
@@ -97,21 +125,62 @@ export default function HomePage() {
 
   return (
     <>
-      <SimpleHeader />
+      {!showLogo && <SimpleHeader />}
       
       <main className="relative min-h-screen bg-black pt-12">
-        {/* Matrix rain background */}
-        <div className="fixed inset-0 opacity-10">
-          <MatrixRainBackground />
-        </div>
-        
-        {/* Scanlines */}
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-scan" />
-        </div>
-        
-        {/* Hero Section - Terminal Interface */}
-        <section className="relative min-h-screen flex items-center justify-center p-8">
+        {/* Show logo first */}
+        {showLogo && (
+          <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ 
+                opacity: [0, 1, 0.9, 1],
+                scale: [0.8, 1, 1.02, 1],
+              }}
+              transition={{ duration: 0.5, times: [0, 0.3, 0.6, 1] }}
+              className="relative"
+            >
+              {/* Lightning bolts around logo */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-yellow-400 text-2xl animate-pulse">⚡</div>
+              <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.5s' }}>⚡</div>
+              <div className="absolute top-1/2 -left-10 transform -translate-y-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.25s' }}>⚡</div>
+              <div className="absolute top-1/2 -right-10 transform -translate-y-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.75s' }}>⚡</div>
+              
+              <img
+                src="/crisp-logo.png"
+                alt="MultiPass Labs logo"
+                style={{
+                  filter: 'brightness(1.2) drop-shadow(0 0 20px #00ff00)',
+                  maxWidth: '100%',
+                  height: 'auto'
+                }}
+              />
+            </motion.div>
+          </div>
+        )}
+
+        {/* Glitch overlay during transition */}
+        {glitchActive && (
+          <div className="fixed inset-0 z-40 pointer-events-none">
+            <div className="absolute inset-0 bg-green-500/20 mix-blend-screen animate-pulse" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent animate-scan" />
+          </div>
+        )}
+
+        {/* Main content with strobe reveal */}
+        <div className={`${contentRevealed ? 'opacity-100' : 'opacity-0'} ${glitchActive ? 'animate-glitch' : ''} transition-opacity duration-100`}>
+          {/* Matrix rain background */}
+          <div className="fixed inset-0 opacity-10">
+            <MatrixRainBackground />
+          </div>
+          
+          {/* Scanlines */}
+          <div className="fixed inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-scan" />
+          </div>
+          
+          {/* Hero Section - Terminal Interface */}
+          <section className="relative min-h-screen flex items-center justify-center p-8">
           <div className="relative z-10 w-full max-w-6xl">
             {/* Terminal Window */}
             <div className="bg-black/80 border border-green-500/30 rounded-lg p-8 backdrop-blur-sm">
@@ -127,8 +196,7 @@ export default function HomePage() {
                 </div>
               </div>
               
-                            {/* Crisp MPL Logo */}
-              {/* Replace the old ASCII art with a crisp PNG logo. */}
+              {/* Crisp MPL Logo */}
               <div className="flex justify-center mb-8">
                 <img
                   src="/crisp-logo.png"
@@ -204,9 +272,9 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </section>
+          </section>
 
-        {/* System Info Section */}
+          {/* System Info Section */}
         <section className="relative py-20 px-8 border-t border-green-500/20">
           <div className="max-w-6xl mx-auto">
             <div className="font-mono text-green-400">
@@ -258,9 +326,9 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </section>
-        
-        {/* Entity Signatures Footer */}
+          </section>
+          
+          {/* Entity Signatures Footer */}
         <footer className="relative border-t border-green-500/20 py-8 px-8">
           <div className="max-w-6xl mx-auto">
             <div className="font-mono text-xs text-green-400/40">
@@ -277,7 +345,8 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </footer>
+          </footer>
+        </div>
       </main>
     </>
   );
