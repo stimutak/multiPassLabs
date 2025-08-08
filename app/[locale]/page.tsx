@@ -69,20 +69,8 @@ export default function HomePage() {
   const [contentRevealed, setContentRevealed] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
   
-  // Get current animation type - default to one of our implemented ones
-  const getAnimationType = () => {
-    if (currentEntity?.animation === 'oscilloscope' || 
-        currentEntity?.animation === 'circuitTraces' || 
-        currentEntity?.animation === 'hexWaterfall' ||
-        currentEntity?.animation === 'glitchGrid' ||
-        currentEntity?.animation === 'softParticles' ||
-        currentEntity?.animation === 'flowField') {
-      return currentEntity.animation;
-    }
-    // Default fallback for entities without implemented animations yet
-    return 'oscilloscope';
-  };
-  const animationType = getAnimationType();
+  // Get current animation type
+  const animationType = currentEntity?.animation || 'oscilloscope';
   
   useEffect(() => {
     // Initial logo display for 2 seconds
@@ -110,23 +98,15 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    // Only cycle between entities that have implemented animations
-    const entitiesWithAnimations = LAB_ENTITIES.filter(e => 
-      e.animation === 'oscilloscope' || 
-      e.animation === 'circuitTraces' || 
-      e.animation === 'hexWaterfall' ||
-      e.animation === 'glitchGrid' ||
-      e.animation === 'softParticles' ||
-      e.animation === 'flowField'
-    );
+    // All entities now have animations!
     
     const interval = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * entitiesWithAnimations.length);
-      const newEntity = entitiesWithAnimations[randomIndex];
+      const randomIndex = Math.floor(Math.random() * LAB_ENTITIES.length);
+      const newEntity = LAB_ENTITIES[randomIndex];
       if (newEntity) {
         setCurrentEntity(newEntity);
       }
-    }, 5000);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
   

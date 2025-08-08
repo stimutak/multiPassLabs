@@ -706,10 +706,389 @@ export class FlowFieldAnimation implements EntityAnimation {
   }
 }
 
+// === WAVE INTERFERENCE ANIMATION (ƒ1lament) ===
+export class WaveInterferenceAnimation implements EntityAnimation {
+  name = 'waveInterference';
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private animationId: number | null = null;
+  private color: string = '#d982ff';
+  private time = 0;
+  private waves: Array<{
+    x: number;
+    y: number;
+    wavelength: number;
+    amplitude: number;
+    speed: number;
+  }> = [];
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.color = color;
+    
+    this.resize();
+    this.generateWaves();
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    if (!this.canvas) return;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  };
+
+  private generateWaves() {
+    if (!this.canvas) return;
+    
+    // Create 3-4 wave sources
+    this.waves = Array.from({ length: 4 }, () => ({
+      x: Math.random() * this.canvas.width,
+      y: Math.random() * this.canvas.height,
+      wavelength: Math.random() * 100 + 50,
+      amplitude: Math.random() * 30 + 20,
+      speed: Math.random() * 0.02 + 0.01
+    }));
+  }
+
+  animate = () => {
+    if (!this.ctx || !this.canvas) return;
+    
+    // Fade effect
+    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.08)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // Calculate interference pattern
+    const imageData = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+    const data = imageData.data;
+    const step = 4; // Sample every 4 pixels for performance
+    
+    for (let x = 0; x < this.canvas.width; x += step) {
+      for (let y = 0; y < this.canvas.height; y += step) {
+        let totalWave = 0;
+        
+        // Calculate interference from all wave sources
+        this.waves.forEach(wave => {
+          const dist = Math.hypot(x - wave.x, y - wave.y);
+          totalWave += Math.sin(dist / wave.wavelength - this.time * wave.speed) * wave.amplitude;
+        });
+        
+        // Normalize and convert to opacity
+        const intensity = (Math.sin(totalWave * 0.05) + 1) * 0.5;
+        
+        if (intensity > 0.3) {
+          // Draw a small square for this sample point
+          this.ctx.fillStyle = this.color + Math.floor(intensity * 100).toString(16).padStart(2, '0');
+          this.ctx.fillRect(x, y, step, step);
+        }
+      }
+    }
+    
+    // Move wave sources slowly
+    this.waves.forEach(wave => {
+      wave.x += Math.sin(this.time * 0.01) * 0.5;
+      wave.y += Math.cos(this.time * 0.01) * 0.5;
+    });
+    
+    this.time++;
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
+// === FEEDBACK LOOP ANIMATION (5ub.signal) ===
+export class FeedbackLoopAnimation implements EntityAnimation {
+  name = 'feedbackLoop';
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private animationId: number | null = null;
+  private color: string = '#ffe95c';
+  private feedbackCanvas: HTMLCanvasElement | null = null;
+  private feedbackCtx: CanvasRenderingContext2D | null = null;
+  private rotation = 0;
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.color = color;
+    
+    // Create feedback buffer
+    this.feedbackCanvas = document.createElement('canvas');
+    this.feedbackCtx = this.feedbackCanvas.getContext('2d');
+    
+    this.resize();
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    if (!this.canvas || !this.feedbackCanvas) return;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.feedbackCanvas.width = window.innerWidth;
+    this.feedbackCanvas.height = window.innerHeight;
+  };
+
+  animate = () => {
+    if (!this.ctx || !this.canvas || !this.feedbackCtx || !this.feedbackCanvas) return;
+    
+    // Copy current canvas to feedback buffer
+    this.feedbackCtx.drawImage(this.canvas, 0, 0);
+    
+    // Clear and add slight fade
+    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.02)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // Draw feedback with transformation
+    this.ctx.save();
+    this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+    this.ctx.rotate(this.rotation);
+    this.ctx.scale(1.01, 1.01);
+    this.ctx.globalAlpha = 0.9;
+    this.ctx.drawImage(
+      this.feedbackCanvas,
+      -this.canvas.width / 2,
+      -this.canvas.height / 2
+    );
+    this.ctx.restore();
+    
+    // Add new elements
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
+    
+    // Draw rotating squares
+    this.ctx.strokeStyle = this.color + '60';
+    this.ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      const size = 50 + i * 30;
+      const angle = this.rotation * (i + 1);
+      
+      this.ctx.save();
+      this.ctx.translate(centerX, centerY);
+      this.ctx.rotate(angle);
+      this.ctx.strokeRect(-size/2, -size/2, size, size);
+      this.ctx.restore();
+    }
+    
+    // Occasional flash
+    if (Math.random() > 0.98) {
+      this.ctx.fillStyle = this.color + '20';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
+    this.rotation += 0.002;
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
+// === CORRUPTED TERMINAL ANIMATION (ctrlN0!r) ===
+export class CorruptedTerminalAnimation implements EntityAnimation {
+  name = 'corruptedTerminal';
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private animationId: number | null = null;
+  private color: string = '#ff5566';
+  private commands: Array<{
+    text: string;
+    x: number;
+    y: number;
+    speed: number;
+    corrupted: boolean;
+  }> = [];
+  private glitchTimer = 0;
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.color = color;
+    
+    this.resize();
+    this.generateCommands();
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    if (!this.canvas) return;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  };
+
+  private generateCommands() {
+    const commandList = [
+      'sudo rm -rf /',
+      'kill -9 $(ps aux)',
+      'chmod 000 /*',
+      'dd if=/dev/random of=/dev/sda',
+      'fork() { fork|fork& }; fork',
+      ':(){ :|:& };:',
+      'mv /* /dev/null',
+      'cat /dev/urandom > /dev/mem',
+      'halt -f',
+      'init 0',
+      'systemctl stop reality.service',
+      'echo "CORRUPTED" > /proc/sys/kernel/panic'
+    ];
+    
+    if (!this.canvas) return;
+    
+    this.commands = Array.from({ length: 20 }, () => ({
+      text: commandList[Math.floor(Math.random() * commandList.length)],
+      x: Math.random() * this.canvas.width,
+      y: Math.random() * this.canvas.height,
+      speed: Math.random() * 2 + 0.5,
+      corrupted: false
+    }));
+  }
+
+  animate = () => {
+    if (!this.ctx || !this.canvas) return;
+    
+    // Fade effect
+    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.ctx.font = '12px monospace';
+    
+    this.commands.forEach(cmd => {
+      // Move diagonally
+      cmd.x += cmd.speed;
+      cmd.y += cmd.speed * 0.5;
+      
+      // Corrupt randomly
+      if (Math.random() > 0.995) {
+        cmd.corrupted = true;
+        setTimeout(() => {
+          cmd.corrupted = false;
+        }, 200);
+      }
+      
+      // Draw command
+      if (cmd.corrupted) {
+        // Draw corrupted version
+        const corrupted = cmd.text.split('').map(c => 
+          Math.random() > 0.5 ? String.fromCharCode(Math.random() * 94 + 33) : c
+        ).join('');
+        this.ctx!.fillStyle = this.color + 'ff';
+        this.ctx!.fillText(corrupted, cmd.x, cmd.y);
+      } else {
+        this.ctx!.fillStyle = this.color + '66';
+        this.ctx!.fillText(cmd.text, cmd.x, cmd.y);
+      }
+      
+      // Wrap around
+      if (cmd.x > this.canvas!.width) {
+        cmd.x = -200;
+        cmd.y = Math.random() * this.canvas!.height;
+      }
+    });
+    
+    // ERROR messages
+    if (this.glitchTimer % 120 === 0) {
+      const errorX = Math.random() * this.canvas.width;
+      const errorY = Math.random() * this.canvas.height;
+      this.ctx.fillStyle = this.color + 'ff';
+      this.ctx.font = 'bold 16px monospace';
+      this.ctx.fillText('[ERROR] SYSTEM CORRUPTED', errorX, errorY);
+      this.ctx.font = '12px monospace';
+    }
+    
+    this.glitchTimer++;
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
+// === ALL GLITCH ANIMATION (mu1ti.p@ss) ===
+export class AllGlitchAnimation implements EntityAnimation {
+  name = 'allGlitch';
+  private canvas: HTMLCanvasElement | null = null;
+  private currentAnimation: EntityAnimation | null = null;
+  private animationId: number | null = null;
+  private switchTimer = 0;
+  private animations = [
+    OscilloscopeAnimation,
+    CircuitTracesAnimation,
+    HexWaterfallAnimation,
+    GlitchGridAnimation,
+    SoftParticlesAnimation,
+    FlowFieldAnimation,
+    WaveInterferenceAnimation,
+    FeedbackLoopAnimation,
+    CorruptedTerminalAnimation
+  ];
+  private currentIndex = 0;
+
+  init(canvas: HTMLCanvasElement, color: string) {
+    this.canvas = canvas;
+    this.switchAnimation(color);
+    window.addEventListener('resize', this.resize);
+  }
+
+  private resize = () => {
+    // Current animation handles its own resize
+  };
+
+  private switchAnimation(color: string) {
+    if (this.currentAnimation) {
+      this.currentAnimation.destroy();
+    }
+    
+    if (!this.canvas) return;
+    
+    const AnimationClass = this.animations[this.currentIndex];
+    this.currentAnimation = new AnimationClass();
+    this.currentAnimation.init(this.canvas, color);
+    this.currentAnimation.animate();
+    
+    this.currentIndex = (this.currentIndex + 1) % this.animations.length;
+  }
+
+  animate = () => {
+    // The individual animations handle their own animation loops
+    // We just switch between them rapidly
+    this.switchTimer++;
+    
+    if (this.switchTimer > 60) { // Switch every second
+      this.switchAnimation('#dddddd');
+      this.switchTimer = 0;
+    }
+    
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    if (this.currentAnimation) {
+      this.currentAnimation.destroy();
+    }
+    window.removeEventListener('resize', this.resize);
+  }
+}
+
 // === ANIMATION MANAGER COMPONENT ===
 interface AnimationManagerProps {
   entityColor: string;
-  animationType: 'oscilloscope' | 'circuitTraces' | 'hexWaterfall' | 'glitchGrid' | 'softParticles' | 'flowField';
+  animationType: 'oscilloscope' | 'circuitTraces' | 'hexWaterfall' | 'glitchGrid' | 'softParticles' | 'flowField' | 'waveInterference' | 'feedbackLoop' | 'corruptedTerminal' | 'allGlitch';
 }
 
 export function EntityAnimationBackground({ entityColor, animationType }: AnimationManagerProps) {
@@ -748,6 +1127,18 @@ export function EntityAnimationBackground({ entityColor, animationType }: Animat
         break;
       case 'flowField':
         newAnimation = new FlowFieldAnimation();
+        break;
+      case 'waveInterference':
+        newAnimation = new WaveInterferenceAnimation();
+        break;
+      case 'feedbackLoop':
+        newAnimation = new FeedbackLoopAnimation();
+        break;
+      case 'corruptedTerminal':
+        newAnimation = new CorruptedTerminalAnimation();
+        break;
+      case 'allGlitch':
+        newAnimation = new AllGlitchAnimation();
         break;
       default:
         newAnimation = new OscilloscopeAnimation();

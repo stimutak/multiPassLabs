@@ -62,7 +62,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: 'v1.0a',
     color: '#d982ff',
     role: 'Delicate waveform sculptor',
-    glitchPattern: '≈≋≈'
+    glitchPattern: '≈≋≈',
+    animation: 'waveInterference'
   },
   {
     id: 'sub-signal',
@@ -71,7 +72,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: '.sig/3.3',
     color: '#ffe95c',
     role: 'Feedback manipulator',
-    glitchPattern: '◉◎◉'
+    glitchPattern: '◉◎◉',
+    animation: 'feedbackLoop'
   },
   {
     id: 'iris-fade',
@@ -90,7 +92,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: 'CRL/09',
     color: '#ff5566',
     role: 'Interface saboteur',
-    glitchPattern: '▪▫▪'
+    glitchPattern: '▪▫▪',
+    animation: 'corruptedTerminal'
   },
   {
     id: 'node-state',
@@ -109,7 +112,8 @@ export const LAB_ENTITIES: LabEntity[] = [
     version: 'root',
     color: '#dddddd',
     role: 'Meta-entity/master access',
-    glitchPattern: '░░░'
+    glitchPattern: '░░░',
+    animation: 'allGlitch'
   }
 ];
 
