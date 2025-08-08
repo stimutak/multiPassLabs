@@ -1,6 +1,7 @@
-'use client';
+`use client';
 
-import { SimpleHeader } from '@/components/ui/simple-header';
+import LogoHeader from '@/components/ui/LogoHeader';
+import Logo, { type LogoVariant } from '@/components/Logo';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LAB_ENTITIES, getRandomEntity, glitchText } from '@/lib/entities';
@@ -61,7 +62,8 @@ function TerminalLine({ children, prefix = '>', delay = 0 }: { children: React.R
 export default function HomePage() {
   const [currentEntity, setCurrentEntity] = useState(LAB_ENTITIES[0] || LAB_ENTITIES.find(() => true)!);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  
+  const [logoVariant, setLogoVariant] = useState<LogoVariant>('monogram');
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentEntity(getRandomEntity());
@@ -97,7 +99,7 @@ export default function HomePage() {
 
   return (
     <>
-      <SimpleHeader />
+      <LogoHeader variant={logoVariant} />
       
       <main className="relative min-h-screen bg-black pt-12">
         {/* Matrix rain background */}
@@ -127,19 +129,19 @@ export default function HomePage() {
                 </div>
               </div>
               
-              {/* ASCII Logo */}
-              <pre className="font-mono text-green-400 text-xs mb-8 leading-tight">
-{`╔══════════════════════════════════════════════╗
-║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓        ║
-║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓        ║
-║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓        ║
-║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓        ║
-║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓        ║
-║   ╚═╝     ╚═╝╚═╝     ╚══════╝                ║
-║                                              ║
-║   M U L T I P A S S   L A B S   [v1.0.0]    ║
-╚══════════════════════════════════════════════╝`}
-              </pre>
+              {/* Vector Logo and Selector */}
+              <div className="flex flex-col items-center mb-8">
+                <Logo variant={logoVariant} className="h-20 md:h-28 w-auto text-green-400" />
+                <select
+                  value={logoVariant}
+                  onChange={(e) => setLogoVariant(e.target.value as LogoVariant)}
+                  className="mt-4 font-mono text-green-400 bg-black border border-green-500/30 rounded p-2"
+                >
+                  <option value="monogram">Monogram</option>
+                  <option value="glyph">Glyph</option>
+                  <option value="wordmark">Wordmark</option>
+                </select>
+              </div>
               
               {/* Terminal Content */}
               <div className="space-y-2 mb-8">
@@ -208,151 +210,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        {/* System Info Section */}
-        <section className="relative py-20 px-8 border-t border-green-500/20">
-          <div className="max-w-6xl mx-auto">
-            <div className="font-mono text-green-400">
-              <h2 className="text-2xl mb-8">
-                <GlitchTextDisplay text="SYSTEM MODULES" />
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Module Cards */}
-                <div className="border border-green-500/20 rounded p-6 bg-black/50">
-                  <div className="text-green-400 mb-4">
-                    <span className="text-2xl">▓▓▓</span>
-                  </div>
-                  <h3 className="text-lg mb-2">neural.network</h3>
-                  <p className="text-xs text-green-400/60 leading-relaxed">
-                    Collective consciousness mesh for distributed creative processing. 
-                    Entity-driven art generation protocols.
-                  </p>
-                  <div className="mt-4 text-xs">
-                    <span className="text-yellow-400">STATUS:</span> <span className="text-green-400">ACTIVE</span>
-                  </div>
-                </div>
-                
-                <div className="border border-green-500/20 rounded p-6 bg-black/50">
-                  <div className="text-green-400 mb-4">
-                    <span className="text-2xl">█▓█</span>
-                  </div>
-                  <h3 className="text-lg mb-2">quantum.tunnel</h3>
-                  <p className="text-xs text-green-400/60 leading-relaxed">
-                    Interdimensional data streams. Reality mesh compilation and glitch aesthetics.
-                  </p>
-                  <div className="mt-4 text-xs">
-                    <span className="text-yellow-400">STATUS:</span> <span className="text-green-400">SYNCING</span>
-                  </div>
-                </div>
-                
-                <div className="border border-green-500/20 rounded p-6 bg-black/50">
-                  <div className="text-green-400 mb-4">
-                    <span className="text-2xl">░▒▓</span>
-                  </div>
-                  <h3 className="text-lg mb-2">glitch.shaders</h3>
-                  <p className="text-xs text-green-400/60 leading-relaxed">
-                    Reality distortion fields. Experimental visual corruption engines.
-                  </p>
-                  <div className="mt-4 text-xs">
-                    <span className="text-yellow-400">STATUS:</span> <span className="text-green-400">LOADED</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Entity Signatures Footer */}
-        <footer className="relative border-t border-green-500/20 py-8 px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="font-mono text-xs text-green-400/40">
-              <div className="mb-4">// Active Entity Signatures</div>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {LAB_ENTITIES.map(entity => (
-                  <div key={entity.id} style={{ color: entity.color }} className="opacity-60 hover:opacity-100 transition-opacity">
-                    {entity.signature} v{entity.version}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-8 text-center">
-                © 2025 Multipass Labs Collective | Reality Version: 1.0.0
-              </div>
-            </div>
-          </div>
-        </footer>
       </main>
     </>
   );
-}
-
-// Matrix Rain Background Component
-function MatrixRainBackground() {
-  useEffect(() => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    
-    const container = document.getElementById('matrix-container');
-    if (!container) return;
-    
-    container.appendChild(canvas);
-    
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    
-    const chars = 'アイウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]()_+-=';
-    const charArray = chars.split('');
-    const fontSize = 12;
-    const columns = canvas.width / fontSize;
-    const drops: number[] = [];
-    
-    for (let i = 0; i < columns; i++) {
-      drops[i] = Math.floor(Math.random() * -100);
-    }
-    
-    const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      ctx.fillStyle = '#00ff00';
-      ctx.font = fontSize + 'px monospace';
-      
-      for (let i = 0; i < drops.length; i++) {
-        const text = charArray[Math.floor(Math.random() * charArray.length)];
-        const dropValue = drops[i];
-        if (text && dropValue !== undefined) {
-          ctx.fillText(text, i * fontSize, dropValue * fontSize);
-        }
-        
-        if (dropValue !== undefined && dropValue * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        } else if (dropValue !== undefined) {
-          drops[i] = dropValue + 1;
-        }
-      }
-    };
-    
-    const interval = setInterval(draw, 35);
-    
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', resizeCanvas);
-      canvas.remove();
-    };
-  }, []);
-  
-  return <div id="matrix-container" className="absolute inset-0" />;
 }
