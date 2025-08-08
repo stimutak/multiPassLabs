@@ -146,15 +146,27 @@ export default function HomePage() {
               <div className="absolute top-1/2 -left-10 transform -translate-y-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.25s' }}>⚡</div>
               <div className="absolute top-1/2 -right-10 transform -translate-y-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.75s' }}>⚡</div>
               
-              <img
-                src="/crisp-logo.png"
-                alt="MultiPass Labs logo"
+              <pre className="font-mono text-green-400 text-xs leading-tight"
                 style={{
-                  filter: 'brightness(1.2) drop-shadow(0 0 20px #00ff00)',
-                  maxWidth: '100%',
-                  height: 'auto'
+                  textShadow: '0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00',
+                  filter: 'brightness(1.2)'
                 }}
-              />
+              >
+{`
+╔══════════════════════════════════════════════╗
+║                                              ║
+║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓         ║
+║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓         ║
+║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓         ║
+║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓         ║
+║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓         ║
+║   ╚═╝     ╚═╝╚═╝     ╚══════╝                ║
+║                                              ║
+║   M U L T I P A S S   L A B S   [v1.0.0]     ║
+║                                              ║
+╚══════════════════════════════════════════════╝
+`}
+              </pre>
             </motion.div>
           </div>
         )}
@@ -196,15 +208,23 @@ export default function HomePage() {
                 </div>
               </div>
               
-              {/* Crisp MPL Logo */}
-              <div className="flex justify-center mb-8">
-                <img
-                  src="/crisp-logo.png"
-                  alt="MultiPass Labs logo"
-                  className="mx-auto"
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
+              {/* ASCII Logo */}
+              <pre className="font-mono text-green-400 text-xs mb-8 leading-tight">
+{`
+╔══════════════════════════════════════════════╗
+║                                              ║
+║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓         ║
+║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓         ║
+║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓         ║
+║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓         ║
+║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓         ║
+║   ╚═╝     ╚═╝╚═╝     ╚══════╝                ║
+║                                              ║
+║   M U L T I P A S S   L A B S   [v1.0.0]     ║
+║                                              ║
+╚══════════════════════════════════════════════╝
+`}
+              </pre>
               
               {/* Terminal Content */}
               <div className="space-y-2 mb-8">

@@ -128,12 +128,14 @@ function GlitchAsciiLogo() {
           ] : 'hue-rotate(0deg) brightness(1)'
         }}
         transition={{ duration: glitchActive ? 0.05 : 0.3 }}
-        className="font-mono text-xs leading-tight select-none"
+        className="font-mono text-xs leading-none select-none whitespace-pre"
         style={{ 
           color: '#4ade80',
           textShadow: glitchActive 
             ? '0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00'
-            : '0 0 5px #00ff00'
+            : '0 0 5px #00ff00',
+          fontSize: '10px',
+          lineHeight: '1.2'
         }}
       >
         {logo}
@@ -160,24 +162,33 @@ function SystemBoot() {
   ];
 
   useEffect(() => {
+    const timeouts: NodeJS.Timeout[] = [];
+    
     bootSequence.forEach(({ text, delay, showEntities }) => {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         if (showEntities) {
           setLines(prev => [...prev, { text }]);
           // Add all entities with staggered delay
           LAB_ENTITIES.forEach((entity, index) => {
-            setTimeout(() => {
+            const entityTimeout = setTimeout(() => {
               setLines(prev => [...prev, { 
                 text: `   ✓ ${entity.name} authenticated`, 
                 entity 
               }]);
             }, 100 * index);
+            timeouts.push(entityTimeout);
           });
         } else {
           setLines(prev => [...prev, { text }]);
         }
       }, delay);
+      timeouts.push(timeout);
     });
+    
+    // Cleanup function to clear all timeouts
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
   }, []);
 
   return (
@@ -429,11 +440,7 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
                 className="flex flex-col items-center"
                 style={{ display: 'flex' }}
               >
-                <img
-                  src="/crisp-logo.png"
-                  alt="MultiPass Labs logo"
-                  className="w-40 h-40 mb-4"
-                />
+                <GlitchAsciiLogo />
                 <motion.div 
                   className="mt-6 text-xs"
                   style={{ color: '#4ade80' }}
