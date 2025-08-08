@@ -68,6 +68,8 @@ export default function HomePage() {
   const [showLogo, setShowLogo] = useState(true);
   const [contentRevealed, setContentRevealed] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
+  const [entityQueue, setEntityQueue] = useState<typeof LAB_ENTITIES>([]);
+  const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
   
   // Get current animation type
   const animationType = currentEntity?.animation || 'oscilloscope';
@@ -97,18 +99,55 @@ export default function HomePage() {
     return () => clearTimeout(logoTimer);
   }, []);
 
+  // Shuffle function to randomize array
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    }
+    return shuffled;
+  };
+
+  // Initialize entity queue with shuffled entities
   useEffect(() => {
-    // All entities now have animations!
+    const shuffled = shuffleArray(LAB_ENTITIES);
+    setEntityQueue(shuffled);
+    console.log('Initialized entity queue with shuffled order:', shuffled.map(e => e.name));
+  }, []);
+
+  useEffect(() => {
+    // Cycle through all entities in order, then reshuffle
+    if (entityQueue.length === 0) return;
     
     const interval = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * LAB_ENTITIES.length);
-      const newEntity = LAB_ENTITIES[randomIndex];
-      if (newEntity) {
-        setCurrentEntity(newEntity);
-      }
+      setCurrentQueueIndex(prevIndex => {
+        const nextIndex = prevIndex + 1;
+        
+        // If we've shown all entities, reshuffle and start over
+        if (nextIndex >= entityQueue.length) {
+          const reshuffled = shuffleArray(LAB_ENTITIES);
+          setEntityQueue(reshuffled);
+          console.log('Reshuffling entity queue:', reshuffled.map(e => e.name));
+          const firstEntity = reshuffled[0];
+          if (firstEntity) {
+            console.log('Switching to entity:', firstEntity.name, 'with animation:', firstEntity.animation);
+            setCurrentEntity(firstEntity);
+          }
+          return 0;
+        } else {
+          const nextEntity = entityQueue[nextIndex];
+          if (nextEntity) {
+            console.log(`[${nextIndex + 1}/${entityQueue.length}] Switching to entity:`, nextEntity.name, 'with animation:', nextEntity.animation);
+            setCurrentEntity(nextEntity);
+          }
+          return nextIndex;
+        }
+      });
     }, 8000);
+    
     return () => clearInterval(interval);
-  }, []);
+  }, [entityQueue]);
   
   useEffect(() => {
     // Simulate command history
