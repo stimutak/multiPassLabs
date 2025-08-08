@@ -325,7 +325,7 @@ export class HexWaterfallAnimation implements EntityAnimation {
     const hexChars = '0123456789ABCDEF';
     const length = Math.floor(Math.random() * 20) + 10;
     return Array.from({ length }, () => 
-      hexChars[Math.floor(Math.random() * hexChars.length)]
+      hexChars[Math.floor(Math.random() * hexChars.length)] || '0'
     );
   }
 
@@ -350,8 +350,9 @@ export class HexWaterfallAnimation implements EntityAnimation {
           const opacity = column.opacity * fade;
           
           // Occasional glitch to entity signature characters
+          const glitchChars = '░▒▓█';
           const displayChar = Math.random() > 0.995 ? 
-            '░▒▓█'[Math.floor(Math.random() * 4)] : char;
+            (glitchChars[Math.floor(Math.random() * 4)] || '█') : char;
           
           this.ctx!.fillStyle = this.color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
           this.ctx!.fillText(displayChar, x, y);
@@ -362,7 +363,7 @@ export class HexWaterfallAnimation implements EntityAnimation {
       column.y += column.speed;
       
       // Reset when off screen
-      if (column.y > this.canvas.height) {
+      if (column.y > this.canvas!.height) {
         column.y = -column.chars.length * 14;
         column.chars = this.generateHexString();
         column.speed = Math.random() * 2 + 0.5;
@@ -418,7 +419,7 @@ export class GlitchGridAnimation implements EntityAnimation {
     const chars = '█▓▒░╔╗╚╝║═┌┐└┘│─┼╬';
     this.grid = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => ({
-        char: chars[Math.floor(Math.random() * chars.length)],
+        char: chars[Math.floor(Math.random() * chars.length)] || '█',
         opacity: Math.random() * 0.3,
         glitching: false
       }))
@@ -442,11 +443,12 @@ export class GlitchGridAnimation implements EntityAnimation {
         // Random glitch chance
         if (Math.random() > 0.995) {
           cell.glitching = true;
-          cell.char = '█▓▒░'[Math.floor(Math.random() * 4)];
+          const glitchChars = '█▓▒░';
+          cell.char = glitchChars[Math.floor(Math.random() * 4)] || '█';
           setTimeout(() => {
             cell.glitching = false;
             const chars = '█▓▒░╔╗╚╝║═┌┐└┘│─┼╬';
-            cell.char = chars[Math.floor(Math.random() * chars.length)];
+            cell.char = chars[Math.floor(Math.random() * chars.length)] || '█';
           }, 100);
         }
         
@@ -523,8 +525,8 @@ export class SoftParticlesAnimation implements EntityAnimation {
     if (!this.canvas) return;
     
     this.particles = Array.from({ length: 50 }, () => ({
-      x: Math.random() * this.canvas.width,
-      y: Math.random() * this.canvas.height,
+      x: Math.random() * this.canvas!.width,
+      y: Math.random() * this.canvas!.height,
       vx: (Math.random() - 0.5) * 0.5,
       vy: (Math.random() - 0.5) * 0.5,
       size: Math.random() * 30 + 10,
@@ -623,8 +625,8 @@ export class FlowFieldAnimation implements EntityAnimation {
     if (!this.canvas) return;
     
     this.particles = Array.from({ length: 100 }, () => ({
-      x: Math.random() * this.canvas.width,
-      y: Math.random() * this.canvas.height,
+      x: Math.random() * this.canvas!.width,
+      y: Math.random() * this.canvas!.height,
       vx: 0,
       vy: 0,
       history: []
@@ -744,8 +746,8 @@ export class WaveInterferenceAnimation implements EntityAnimation {
     
     // Create 3-4 wave sources
     this.waves = Array.from({ length: 4 }, () => ({
-      x: Math.random() * this.canvas.width,
-      y: Math.random() * this.canvas.height,
+      x: Math.random() * this.canvas!.width,
+      y: Math.random() * this.canvas!.height,
       wavelength: Math.random() * 100 + 50,
       amplitude: Math.random() * 30 + 20,
       speed: Math.random() * 0.02 + 0.01
@@ -945,9 +947,9 @@ export class CorruptedTerminalAnimation implements EntityAnimation {
     if (!this.canvas) return;
     
     this.commands = Array.from({ length: 20 }, () => ({
-      text: commandList[Math.floor(Math.random() * commandList.length)],
-      x: Math.random() * this.canvas.width,
-      y: Math.random() * this.canvas.height,
+      text: commandList[Math.floor(Math.random() * commandList.length)] || 'ERROR',
+      x: Math.random() * this.canvas!.width,
+      y: Math.random() * this.canvas!.height,
       speed: Math.random() * 2 + 0.5,
       corrupted: false
     }));
@@ -1055,6 +1057,7 @@ export class AllGlitchAnimation implements EntityAnimation {
     if (!this.canvas) return;
     
     const AnimationClass = this.animations[this.currentIndex];
+    if (!AnimationClass) return;
     this.currentAnimation = new AnimationClass();
     this.currentAnimation.init(this.canvas, color);
     this.currentAnimation.animate();
