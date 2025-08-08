@@ -127,19 +127,16 @@ export default function HomePage() {
                 </div>
               </div>
               
-              {/* ASCII Logo */}
-              <pre className="font-mono text-green-400 text-xs mb-8 leading-tight">
-{`╔══════════════════════════════════════════════╗
-║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓        ║
-║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓        ║
-║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓        ║
-║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓        ║
-║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓        ║
-║   ╚═╝     ╚═╝╚═╝     ╚══════╝                ║
-║                                              ║
-║   M U L T I P A S S   L A B S   [v1.0.0]    ║
-╚══════════════════════════════════════════════╝`}
-              </pre>
+                            {/* Crisp MPL Logo */}
+              {/* Replace the old ASCII art with a crisp PNG logo. */}
+              <div className="flex justify-center mb-8">
+                <img
+                  src="/crisp-logo.png"
+                  alt="MultiPass Labs logo"
+                  className="mx-auto"
+                  style={{ maxWidth: '100%', height: 'auto' }}
+                />
+              </div>
               
               {/* Terminal Content */}
               <div className="space-y-2 mb-8">
