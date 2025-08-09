@@ -10,7 +10,8 @@ import { MetallicWaves } from '@/components/backgrounds/metallic-waves';
 import { motion } from 'framer-motion';
 
 export default function BlogPage() {
-  const t = useTranslations('blog');
+  // Remove translations for now as they're not configured
+  // const t = useTranslations('blog');
   const locale = useLocale();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,13 +56,13 @@ export default function BlogPage() {
       <SimpleHeader currentEntity={currentEntity} />
       <MetallicWaves entityColor={currentEntity?.color} />
       
-      <main className="relative min-h-screen pt-20 md:pt-12 p-8 z-10">
+      <main className="relative min-h-screen pt-32 md:pt-24 p-8 z-10">
       <div className="max-w-7xl mx-auto relative">
         {/* Header - Terminal Style */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 border-2 rounded-lg p-6 bg-black/80 backdrop-blur-sm"
+          className="mb-12 border-2 rounded-lg p-6 bg-black/90 backdrop-blur-sm"
           style={{ 
             borderColor: `${currentEntity?.color}60`,
             boxShadow: `0 0 30px ${currentEntity?.color}20`
@@ -91,7 +92,7 @@ export default function BlogPage() {
 
         {/* Entity Filter */}
         <div className="mb-8">
-          <h3 className="text-lg font-mono mb-4 text-green-400">{t('filterByEntity') || 'FILTER BY ENTITY'}</h3>
+          <h3 className="text-lg font-mono mb-4 text-green-400">FILTER BY ENTITY</h3>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setSelectedEntity(null)}
@@ -101,7 +102,7 @@ export default function BlogPage() {
                   : 'bg-black/40 text-green-400/60 border-green-400/30 hover:bg-green-400/10'
               }`}
             >
-              {t('allEntities') || 'ALL ENTITIES'}
+              ALL ENTITIES
             </button>
             {LAB_ENTITIES.map((entity) => (
               <button
@@ -127,20 +128,21 @@ export default function BlogPage() {
 
         {loading ? (
           <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p className="text-muted-foreground">{t('loading')}</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" 
+                 style={{ borderColor: currentEntity?.color }}></div>
+            <p className="text-green-400/60 font-mono">LOADING...</p>
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-lg text-muted-foreground mb-4">
-              {selectedEntity ? t('noPostsForEntity') : t('noPosts')}
+            <p className="text-lg text-green-400/60 font-mono mb-4">
+              {selectedEntity ? 'NO TRANSMISSIONS FROM THIS ENTITY' : 'NO TRANSMISSIONS DETECTED'}
             </p>
             {selectedEntity && (
               <button
                 onClick={() => setSelectedEntity(null)}
-                className="px-4 py-2 bg-white text-black rounded-full font-mono text-sm hover:bg-white/90 transition-colors"
+                className="px-4 py-2 border border-green-400 text-green-400 rounded-full font-mono text-sm hover:bg-green-400/10 transition-colors"
               >
-                {t('showAllPosts')}
+                SHOW ALL TRANSMISSIONS
               </button>
             )}
           </div>
@@ -149,7 +151,7 @@ export default function BlogPage() {
             {/* Featured Posts */}
             {featuredPosts.length > 0 && (
               <section className="mb-12">
-                <h2 className="text-2xl font-mono mb-6">{t('featured')}</h2>
+                <h2 className="text-2xl font-mono mb-6 text-green-400">FEATURED TRANSMISSIONS</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {featuredPosts.map((post) => (
                     <PostCard
@@ -172,8 +174,8 @@ export default function BlogPage() {
             {/* Regular Posts */}
             {regularPosts.length > 0 && (
               <section>
-                <h2 className="text-2xl font-mono mb-6">
-                  {featuredPosts.length > 0 ? t('latest') : t('allPosts')}
+                <h2 className="text-2xl font-mono mb-6 text-green-400">
+                  {featuredPosts.length > 0 ? 'RECENT TRANSMISSIONS' : 'ALL TRANSMISSIONS'}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {regularPosts.map((post) => (

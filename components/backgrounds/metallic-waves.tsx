@@ -39,35 +39,41 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
     window.addEventListener('resize', resize);
 
     const animate = () => {
-      timeRef.current += 0.005;
+      timeRef.current += 0.004;
       
-      // Clear canvas completely for clean metallic effect
+      // Clear canvas for oil effect
       ctx.fillStyle = 'rgba(0, 0, 0, 1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Create metallic shimmer with color shifts - more dramatic
-      const shimmer = Math.sin(timeRef.current * 4) * 0.5 + 0.5;
-      const colorShift = Math.sin(timeRef.current * 1.5) * 60; // Bigger color shift
-      const colorShift2 = Math.cos(timeRef.current * 2) * 40;
+      // Create oil slick shimmer with rainbow interference
+      const shimmer = Math.sin(timeRef.current * 3) * 0.5 + 0.5;
+      const hueShift = timeRef.current * 50; // Continuous hue rotation for oil rainbow
+      const colorShift = Math.sin(timeRef.current * 2) * 100; // Dramatic color shift
+      const colorShift2 = Math.cos(timeRef.current * 1.5) * 80;
       
-      // Draw metallic sheet background with gradient - using both color shifts
+      // Draw oil slick background with rainbow gradient
       const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      bgGradient.addColorStop(0, `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift2)}, ${Math.min(255, baseColor.b + colorShift)}, 0.2)`);
-      bgGradient.addColorStop(0.3, `rgba(${Math.min(255, baseColor.r + colorShift2)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift2)}, 0.25)`);
-      bgGradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.1 * shimmer})`); // White highlight for metallic sheen
-      bgGradient.addColorStop(0.7, `rgba(${Math.max(0, baseColor.r + colorShift)}, ${Math.max(0, baseColor.g - colorShift2)}, ${Math.max(0, baseColor.b - colorShift)}, 0.2)`);
-      bgGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.15)`);
+      
+      // Create oil rainbow effect with HSL colors
+      for (let i = 0; i <= 1; i += 0.1) {
+        const hue = (hueShift + i * 360 + colorShift) % 360;
+        const saturation = 70 + shimmer * 30; // High saturation for oil effect
+        const lightness = 40 + Math.sin(i * Math.PI * 2 + timeRef.current) * 20;
+        bgGradient.addColorStop(i, `hsla(${hue}, ${saturation}%, ${lightness}%, ${0.15 + shimmer * 0.1})`);
+      }
       
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw metallic sheets as mesh grid that undulates - with color variation
-      for (let y = 0; y < canvas.height; y += 20) {
+      // Draw oil slick waves with rainbow interference
+      for (let y = 0; y < canvas.height; y += 15) {
         ctx.beginPath();
-        // Vary colors per line for more dynamic effect
-        const lineColorShift = Math.sin(y * 0.01 + timeRef.current) * 30;
-        ctx.strokeStyle = `rgba(${Math.min(255, baseColor.r + colorShift + lineColorShift)}, ${Math.min(255, baseColor.g + colorShift2)}, ${Math.min(255, baseColor.b + colorShift)}, ${0.4 + shimmer * 0.3})`;
-        ctx.lineWidth = 1.5;
+        // Create oil rainbow per line
+        const lineHue = (hueShift * 2 + y * 0.5 + Math.sin(timeRef.current + y * 0.01) * 60) % 360;
+        const lineSat = 80 + Math.sin(y * 0.02 + timeRef.current * 2) * 20;
+        const lineLightness = 50 + Math.cos(y * 0.01 + timeRef.current) * 25;
+        ctx.strokeStyle = `hsla(${lineHue}, ${lineSat}%, ${lineLightness}%, ${0.5 + shimmer * 0.3})`;
+        ctx.lineWidth = 2;
         
         for (let x = 0; x <= canvas.width; x += 10) {
           const wave1 = Math.sin((x * 0.01) + timeRef.current + (y * 0.01)) * 20;
@@ -83,13 +89,15 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
         ctx.stroke();
       }
       
-      // Vertical lines for mesh/interference - with iridescent colors
-      for (let x = 0; x < canvas.width; x += 20) {
+      // Vertical oil film lines for mesh/interference
+      for (let x = 0; x < canvas.width; x += 15) {
         ctx.beginPath();
-        // Create iridescent effect with shifting colors
-        const lineColorShift = Math.cos(x * 0.01 + timeRef.current * 2) * 50;
-        ctx.strokeStyle = `rgba(${Math.min(255, 200 + lineColorShift)}, ${Math.min(255, 200 + colorShift2)}, ${Math.min(255, 255)}, ${0.15 + shimmer * 0.15})`; // Iridescent highlights
-        ctx.lineWidth = 1;
+        // Create complementary oil rainbow
+        const lineHue = (hueShift * 3 + x * 0.5 + Math.cos(timeRef.current + x * 0.01) * 90) % 360;
+        const lineSat = 90; // High saturation for oil
+        const lineLightness = 60 + Math.sin(x * 0.01 + timeRef.current * 1.5) * 20;
+        ctx.strokeStyle = `hsla(${lineHue}, ${lineSat}%, ${lineLightness}%, ${0.3 + shimmer * 0.2})`;
+        ctx.lineWidth = 1.5;
         
         for (let y = 0; y <= canvas.height; y += 10) {
           const wave1 = Math.sin((y * 0.01) + timeRef.current * 0.8 + (x * 0.01)) * 15;
@@ -105,16 +113,19 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
         ctx.stroke();
       }
       
-      // Add specular highlights for metallic sheen
-      const numHighlights = 5;
+      // Add oil bubble highlights with prismatic colors
+      const numHighlights = 8;
       for (let i = 0; i < numHighlights; i++) {
-        const x = (Math.sin(timeRef.current * 0.7 + i * 2) + 1) * canvas.width / 2;
-        const y = (Math.cos(timeRef.current * 0.5 + i * 1.5) + 1) * canvas.height / 2;
-        const radius = 100 + Math.sin(timeRef.current * 2 + i) * 50;
+        const x = (Math.sin(timeRef.current * 0.5 + i * 2) + 1) * canvas.width / 2;
+        const y = (Math.cos(timeRef.current * 0.3 + i * 1.5) + 1) * canvas.height / 2;
+        const radius = 80 + Math.sin(timeRef.current * 2 + i) * 40;
         
         const highlightGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${0.2 * shimmer})`);
-        highlightGradient.addColorStop(0.5, `rgba(${Math.min(255, baseColor.r + 50)}, ${Math.min(255, baseColor.g + 50)}, ${Math.min(255, baseColor.b + 50)}, ${0.1 * shimmer})`);
+        // Create prismatic oil bubble effect
+        const bubbleHue = (hueShift * 4 + i * 45) % 360;
+        highlightGradient.addColorStop(0, `hsla(${bubbleHue}, 100%, 70%, ${0.3 * shimmer})`);
+        highlightGradient.addColorStop(0.3, `hsla(${(bubbleHue + 60) % 360}, 90%, 60%, ${0.2 * shimmer})`);
+        highlightGradient.addColorStop(0.6, `hsla(${(bubbleHue + 120) % 360}, 80%, 50%, ${0.1 * shimmer})`);
         highlightGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         
         ctx.fillStyle = highlightGradient;
@@ -137,7 +148,7 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
   return (
     <canvas 
       ref={canvasRef}
-      className="fixed inset-0 opacity-60 pointer-events-none z-0"
+      className="fixed inset-0 opacity-80 pointer-events-none z-0"
     />
   );
 }
