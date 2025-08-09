@@ -23,11 +23,17 @@ function TerminalCursor() {
   return <span className={`${visible ? 'opacity-100' : 'opacity-0'}`}>_</span>;
 }
 
-// Subliminal flash component
+// Subliminal flash component - Machine gun cluster effect
 function SubliminalFlash({ entity }: { entity: any }) {
-  const [showFlash, setShowFlash] = useState(false);
-  const [flashContent, setFlashContent] = useState('');
-  const [flashPosition, setFlashPosition] = useState({ top: '30%', left: '50%' });
+  const [flashClusters, setFlashClusters] = useState<Array<{
+    id: number;
+    content: string;
+    top: string;
+    left: string;
+    rotation: number;
+    opacity: number;
+    fontSize: number;
+  }>>([]);
   
   const messages = [
     `[${entity?.signature}] OBSERVING...`,
@@ -41,49 +47,74 @@ function SubliminalFlash({ entity }: { entity: any }) {
     `[REDACTED]`,
     `▓▓▓▓▓▓▓▓▓`,
     entity?.glitchPattern || '█▓▒░',
+    `BREACH`,
+    `INIT`,
+    `>_`,
+    `///`,
+    `***`,
   ];
   
   useEffect(() => {
     const flashInterval = setInterval(() => {
-      // Flash more frequently (40% chance)
-      if (Math.random() < 0.4) {
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        setFlashContent(randomMessage || '');
+      // 30% chance to trigger a cluster
+      if (Math.random() < 0.3) {
+        // Center point for the cluster
+        const centerTop = 20 + Math.random() * 60;
+        const centerLeft = 10 + Math.random() * 70;
         
-        // Random position within the terminal box
-        const topPos = 20 + Math.random() * 60; // 20-80% from top
-        const leftPos = 10 + Math.random() * 70; // 10-80% from left
-        setFlashPosition({ top: `${topPos}%`, left: `${leftPos}%` });
+        // Create 3-8 messages in rapid succession
+        const clusterSize = 3 + Math.floor(Math.random() * 6);
+        const newCluster: typeof flashClusters = [];
         
-        setShowFlash(true);
-        
-        // Flash duration between 100-300ms (longer for visibility)
-        const flashDuration = 100 + Math.random() * 200;
-        setTimeout(() => setShowFlash(false), flashDuration);
+        for (let i = 0; i < clusterSize; i++) {
+          setTimeout(() => {
+            const flash = {
+              id: Date.now() + Math.random(),
+              content: messages[Math.floor(Math.random() * messages.length)] || '',
+              // Spread around center point within 15% radius
+              top: `${centerTop + (Math.random() - 0.5) * 30}%`,
+              left: `${centerLeft + (Math.random() - 0.5) * 30}%`,
+              rotation: (Math.random() - 0.5) * 30, // -15 to +15 degrees
+              opacity: 0.1 + Math.random() * 0.2, // 0.1-0.3
+              fontSize: 18 + Math.floor(Math.random() * 12) // 18-30px
+            };
+            
+            setFlashClusters(prev => [...prev, flash]);
+            
+            // Remove this flash after 50-200ms
+            const duration = 50 + Math.random() * 150;
+            setTimeout(() => {
+              setFlashClusters(prev => prev.filter(f => f.id !== flash.id));
+            }, duration);
+          }, i * (20 + Math.random() * 60)); // Stagger by 20-80ms
+        }
       }
-    }, 1000 + Math.random() * 2000); // Random interval 1-3 seconds (more frequent)
+    }, 2000 + Math.random() * 3000); // Check every 2-5 seconds
     
     return () => clearInterval(flashInterval);
   }, [entity]);
   
-  if (!showFlash) return null;
-  
   return (
-    <div 
-      className="absolute font-mono pointer-events-none"
-      style={{ 
-        top: flashPosition.top,
-        left: flashPosition.left,
-        transform: 'translate(-50%, -50%)',
-        fontSize: '24px', // Much larger font
-        color: entity?.color || '#00ff00',
-        opacity: 0.15 + Math.random() * 0.15, // Much more transparent (0.15-0.3)
-        textShadow: `0 0 30px ${entity?.color}44`, // Subtle glow
-        animation: 'glitch 0.1s infinite'
-      }}
-    >
-      {flashContent}
-    </div>
+    <>
+      {flashClusters.map(flash => (
+        <div 
+          key={flash.id}
+          className="absolute font-mono pointer-events-none"
+          style={{ 
+            top: flash.top,
+            left: flash.left,
+            transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
+            fontSize: `${flash.fontSize}px`,
+            color: entity?.color || '#00ff00',
+            opacity: flash.opacity,
+            textShadow: `0 0 20px ${entity?.color}44`,
+            animation: 'glitch 0.05s infinite'
+          }}
+        >
+          {flash.content}
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -371,19 +402,19 @@ export default function HomePage() {
       <SimpleHeader currentEntity={currentEntity} />
       
       <main className="relative min-h-screen bg-black pt-20 md:pt-12">
+        {/* Entity-based animation background - moved outside content div */}
+        <EntityAnimationBackground 
+          entityColor={currentEntity?.color || '#00f4ff'} 
+          animationType={animationType as any}
+        />
+        
+        {/* Scanlines */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-scan" />
+        </div>
 
-        {/* Main content */}
-        <div className="opacity-100">
-          {/* Entity-based animation background */}
-          <EntityAnimationBackground 
-            entityColor={currentEntity?.color || '#00f4ff'} 
-            animationType={animationType as any}
-          />
-          
-          {/* Scanlines */}
-          <div className="fixed inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-scan" />
-          </div>
+        {/* Main content - now above background */}
+        <div className="relative z-10">
           
           {/* Hero Section - Terminal Interface */}
           <section className="relative min-h-screen flex items-center justify-center p-8">
@@ -544,7 +575,7 @@ export default function HomePage() {
           </section>
 
           {/* System Info Section */}
-        <section className="relative py-20 px-8 border-t transition-all duration-500"
+        <section className="relative py-20 px-8 border-t transition-all duration-500 z-10"
                  style={{ 
                    borderColor: `${currentEntity?.color}20`,
                    backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black background
@@ -556,11 +587,24 @@ export default function HomePage() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Module Cards */}
-                <div className="border rounded p-6 transition-all duration-500"
+                {/* Module Cards - with forced opacity and hover effects */}
+                <div className="rounded p-6 transition-all duration-300 cursor-pointer hover:scale-105"
                      style={{ 
-                       borderColor: `${currentEntity?.color}20`,
-                       backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black
+                       border: `1px solid ${currentEntity?.color}20`,
+                       backgroundColor: '#000000',
+                       background: '#000000',
+                       opacity: 1,
+                       backdropFilter: 'none'
+                     }}
+                     onMouseEnter={(e) => {
+                       e.currentTarget.style.border = `1px solid ${currentEntity?.color}`;
+                       e.currentTarget.style.boxShadow = `0 0 30px ${currentEntity?.color}40`;
+                       e.currentTarget.style.transform = 'scale(1.05)';
+                     }}
+                     onMouseLeave={(e) => {
+                       e.currentTarget.style.border = `1px solid ${currentEntity?.color}20`;
+                       e.currentTarget.style.boxShadow = 'none';
+                       e.currentTarget.style.transform = 'scale(1)';
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">▓▓▓</span>
@@ -575,10 +619,23 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                <div className="border rounded p-6 transition-all duration-500"
+                <div className="rounded p-6 transition-all duration-300 cursor-pointer hover:scale-105"
                      style={{ 
-                       borderColor: `${currentEntity?.color}20`,
-                       backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black
+                       border: `1px solid ${currentEntity?.color}20`,
+                       backgroundColor: '#000000',
+                       background: '#000000',
+                       opacity: 1,
+                       backdropFilter: 'none'
+                     }}
+                     onMouseEnter={(e) => {
+                       e.currentTarget.style.border = `1px solid ${currentEntity?.color}`;
+                       e.currentTarget.style.boxShadow = `0 0 30px ${currentEntity?.color}40`;
+                       e.currentTarget.style.transform = 'scale(1.05)';
+                     }}
+                     onMouseLeave={(e) => {
+                       e.currentTarget.style.border = `1px solid ${currentEntity?.color}20`;
+                       e.currentTarget.style.boxShadow = 'none';
+                       e.currentTarget.style.transform = 'scale(1)';
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">█▓█</span>
@@ -592,10 +649,23 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                <div className="border rounded p-6 transition-all duration-500"
+                <div className="rounded p-6 transition-all duration-300 cursor-pointer hover:scale-105"
                      style={{ 
-                       borderColor: `${currentEntity?.color}20`,
-                       backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black
+                       border: `1px solid ${currentEntity?.color}20`,
+                       backgroundColor: '#000000',
+                       background: '#000000',
+                       opacity: 1,
+                       backdropFilter: 'none'
+                     }}
+                     onMouseEnter={(e) => {
+                       e.currentTarget.style.border = `1px solid ${currentEntity?.color}`;
+                       e.currentTarget.style.boxShadow = `0 0 30px ${currentEntity?.color}40`;
+                       e.currentTarget.style.transform = 'scale(1.05)';
+                     }}
+                     onMouseLeave={(e) => {
+                       e.currentTarget.style.border = `1px solid ${currentEntity?.color}20`;
+                       e.currentTarget.style.boxShadow = 'none';
+                       e.currentTarget.style.transform = 'scale(1)';
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">░▒▓</span>
@@ -614,22 +684,37 @@ export default function HomePage() {
           </section>
           
           {/* Entity Signatures Footer */}
-        <footer className="relative border-t py-8 px-8 transition-all duration-500"
+        <footer className="relative border-t py-8 px-8 transition-all duration-500 z-10"
                 style={{ 
                   borderColor: `${currentEntity?.color}20`,
-                  backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black background
+                  backgroundColor: '#000000',
+                  background: '#000000',
+                  opacity: 1,
+                  backdropFilter: 'none'
                 }}>
           <div className="max-w-6xl mx-auto">
             <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}66` }}>
               <div className="mb-4">// Active Entity Signatures</div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {LAB_ENTITIES.map(entity => (
-                  <div key={entity.id} style={{ color: entity.color }} className="opacity-60 hover:opacity-100 transition-opacity">
+                  <div key={entity.id} 
+                       style={{ 
+                         color: entity.color,
+                         backgroundColor: '#000000',
+                         padding: '4px'
+                       }} 
+                       className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+                       onMouseEnter={(e) => {
+                         e.currentTarget.style.textShadow = `0 0 10px ${entity.color}66`;
+                       }}
+                       onMouseLeave={(e) => {
+                         e.currentTarget.style.textShadow = 'none';
+                       }}>
                     {entity.signature} v{entity.version}
                   </div>
                 ))}
               </div>
-              <div className="mt-8 text-center">
+              <div className="mt-8 text-center" style={{ backgroundColor: '#000000' }}>
                 © 2025 Multipass Labs Collective | Reality Version: 1.0.0
               </div>
             </div>
