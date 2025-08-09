@@ -8,7 +8,7 @@ interface MetallicWavesProps {
 
 export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const timeRef = useRef(0);
 
   useEffect(() => {
@@ -21,14 +21,14 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
     // Parse entity color to RGB
     const hexToRgb = (hex: string) => {
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
+      return result && result[1] && result[2] && result[3] ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
       } : { r: 0, g: 244, b: 255 };
     };
 
-    const baseColor = hexToRgb(entityColor);
+    const _baseColor = hexToRgb(entityColor);
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -49,7 +49,7 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
       const shimmer = Math.sin(timeRef.current * 3) * 0.5 + 0.5;
       const hueShift = timeRef.current * 50; // Continuous hue rotation for oil rainbow
       const colorShift = Math.sin(timeRef.current * 2) * 100; // Dramatic color shift
-      const colorShift2 = Math.cos(timeRef.current * 1.5) * 80;
+      const _colorShift2 = Math.cos(timeRef.current * 1.5) * 80;
       
       // Draw oil slick background with rainbow gradient
       const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);

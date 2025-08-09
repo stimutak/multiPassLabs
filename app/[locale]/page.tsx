@@ -342,7 +342,7 @@ function QuickIntro({ onComplete }: { onComplete: () => void }) {
 
 export default function HomePage() {
   // Start with an entity that has an implemented animation
-  const initialEntity = LAB_ENTITIES.find(e => e.animation === 'oscilloscope') || LAB_ENTITIES[0] || null;
+  const initialEntity = LAB_ENTITIES.find(e => e.animation === 'oscilloscope') || LAB_ENTITIES[0];
   const [currentEntity, setCurrentEntity] = useState(initialEntity);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [showFullBoot, setShowFullBoot] = useState(false);
@@ -482,7 +482,7 @@ export default function HomePage() {
         {/* Entity-based animation background - moved outside content div */}
         <EntityAnimationBackground 
           entityColor={currentEntity?.color || '#00f4ff'} 
-          animationType={animationType as 'oscilloscope' | 'glitchMesh' | 'matrixRain' | 'circuitBoard' | 'flowField' | 'audioWave' | 'fractalTree' | 'noiseTerrain' | 'particleSwarm' | 'codeRain'}
+          animationType={animationType as 'oscilloscope' | 'circuitTraces' | 'hexWaterfall' | 'glitchGrid' | 'waveInterference' | 'feedbackLoop' | 'softParticles' | 'corruptedTerminal' | 'flowField' | 'allGlitch'}
         />
         
         {/* Scanlines */}
@@ -503,7 +503,7 @@ export default function HomePage() {
                    boxShadow: `0 0 30px ${currentEntity?.color}30`
                  }}>
               {/* Subliminal Flash in top-right */}
-              <SubliminalFlash entity={currentEntity} />
+              <SubliminalFlash entity={currentEntity || null} />
               
               {/* Terminal Header */}
               <div className="flex items-center justify-between mb-6 pb-4 border-b transition-all duration-500"

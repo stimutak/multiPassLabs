@@ -12,7 +12,7 @@ interface SimpleHeaderProps {
 export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
   const _pathname = usePathname();
   const [currentTime, setCurrentTime] = useState('');
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [_showMobileMenu, _setShowMobileMenu] = useState(false);
   
   useEffect(() => {
     const updateTime = () => {

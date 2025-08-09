@@ -280,7 +280,7 @@ export default function StartupIntro({ onComplete }: { onComplete: () => void })
 
   useEffect(() => {
     // Add keypress listener for logo phase
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (_e: KeyboardEvent) => {
       handleUserInteraction();
       handleLogoKeyPress();
     };

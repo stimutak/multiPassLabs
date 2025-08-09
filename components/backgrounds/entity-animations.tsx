@@ -193,7 +193,7 @@ export class CircuitTracesAnimation implements EntityAnimation {
     this.ctx.strokeStyle = this.color + '20';
     this.ctx.lineWidth = 1;
     
-    this.nodes.forEach((node, i) => {
+    this.nodes.forEach((node, _i) => {
       node.connections.forEach(targetIndex => {
         const target = this.nodes[targetIndex];
         if (!target) return;
@@ -763,7 +763,7 @@ export class WaveInterferenceAnimation implements EntityAnimation {
     
     // Calculate interference pattern
     const imageData = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-    const data = imageData.data;
+    const _data = imageData.data;
     const step = 4; // Sample every 4 pixels for performance
     
     for (let x = 0; x < this.canvas.width; x += step) {

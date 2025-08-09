@@ -12,7 +12,7 @@ import {
   playTypingSound,
   toggleAudioMute
 } from '@/lib/audio/glitch-audio';
-import { LAB_ENTITIES, glitchText } from '@/lib/entities';
+import { LAB_ENTITIES, glitchText as _glitchText } from '@/lib/entities';
 import { logoVariants } from './logo-variants';
 
 // Enhanced typewriter with glitch capability
@@ -290,7 +290,7 @@ export default function StartupIntroV2({ onComplete }: { onComplete: () => void 
 
   useEffect(() => {
     // Add keypress listener for logo phase
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (_e: KeyboardEvent) => {
       handleUserInteraction();
       handleLogoKeyPress();
     };
