@@ -55,7 +55,7 @@ export default function BlogPage() {
       <SimpleHeader currentEntity={currentEntity} />
       <MetallicWaves entityColor={currentEntity?.color} />
       
-      <main className="min-h-screen bg-black pt-20 md:pt-12 p-8">
+      <main className="min-h-screen pt-24 md:pt-16 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header - Terminal Style */}
         <motion.div 
@@ -78,13 +78,13 @@ export default function BlogPage() {
           
           <div className="font-mono">
             <div className="text-2xl mb-2" style={{ color: currentEntity?.color }}>
-              $ cat /var/log/transmissions
+              [BLOG] EXPERIMENTAL TRANSMISSIONS
             </div>
             <div className="text-sm" style={{ color: `${currentEntity?.color}80` }}>
-              {'>'} {t('subtitle') || 'Technical discoveries and experimental insights from the lab collective'}
+              $ ls -la /var/log/transmissions/
             </div>
             <div className="text-sm mt-2" style={{ color: `${currentEntity?.color}60` }}>
-              {'>'} Total transmissions: {BLOG_POSTS.filter(p => p.published).length} | Active entities: {LAB_ENTITIES.length}
+              {'>'} {BLOG_POSTS.filter(p => p.published).length} transmissions found | {LAB_ENTITIES.length} entities active
             </div>
           </div>
         </motion.div>

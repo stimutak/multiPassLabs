@@ -42,22 +42,22 @@ export function PostCard({
       <Card 
         className={cn(
           'group transition-all duration-300 hover:shadow-lg',
-          'border-2 hover:border-opacity-80 cursor-pointer',
-          'bg-black/40 backdrop-blur-sm',
+          'border-2 hover:border-opacity-100 cursor-pointer',
+          'bg-black/90 backdrop-blur-sm',
           featured && 'ring-2 ring-offset-2 ring-offset-black',
           className
         )}
         style={{
           ...cssVars,
-          borderColor: `${entity.color}33`,
+          borderColor: `${entity.color}60`,
         } as React.CSSProperties}
       >
         <CardHeader className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <CardTitle 
-              className="group-hover:text-white transition-colors line-clamp-2"
+              className="transition-colors line-clamp-2 text-green-400 group-hover:text-white"
               style={{ 
-                color: featured ? entity.color : undefined 
+                color: entity.color
               }}
             >
               {title}
@@ -84,7 +84,7 @@ export function PostCard({
 
         {excerpt && (
           <CardContent>
-            <p className="text-sm text-muted-foreground line-clamp-3">
+            <p className="text-sm text-green-400/70 line-clamp-3">
               {excerpt}
             </p>
           </CardContent>
@@ -92,7 +92,7 @@ export function PostCard({
 
         <CardFooter className="flex items-center justify-between pt-4">
           <time 
-            className="text-xs text-muted-foreground font-mono"
+            className="text-xs text-green-400/60 font-mono"
             dateTime={createdAt.toISOString()}
           >
             {formatDate(createdAt, locale)}
