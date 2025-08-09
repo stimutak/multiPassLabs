@@ -27,6 +27,7 @@ function TerminalCursor() {
 function SubliminalFlash({ entity }: { entity: any }) {
   const [showFlash, setShowFlash] = useState(false);
   const [flashContent, setFlashContent] = useState('');
+  const [flashPosition, setFlashPosition] = useState({ top: '30%', left: '50%' });
   
   const messages = [
     `[${entity?.signature}] OBSERVING...`,
@@ -48,6 +49,12 @@ function SubliminalFlash({ entity }: { entity: any }) {
       if (Math.random() < 0.4) {
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
         setFlashContent(randomMessage || '');
+        
+        // Random position within the terminal box
+        const topPos = 20 + Math.random() * 60; // 20-80% from top
+        const leftPos = 10 + Math.random() * 70; // 10-80% from left
+        setFlashPosition({ top: `${topPos}%`, left: `${leftPos}%` });
+        
         setShowFlash(true);
         
         // Flash duration between 100-300ms (longer for visibility)
@@ -63,13 +70,16 @@ function SubliminalFlash({ entity }: { entity: any }) {
   
   return (
     <div 
-      className="absolute top-4 right-4 font-mono text-xs pointer-events-none"
+      className="absolute font-mono pointer-events-none"
       style={{ 
+        top: flashPosition.top,
+        left: flashPosition.left,
+        transform: 'translate(-50%, -50%)',
+        fontSize: '24px', // Much larger font
         color: entity?.color || '#00ff00',
-        opacity: 0.7 + Math.random() * 0.3, // Higher opacity (0.7-1.0)
-        textShadow: `0 0 20px ${entity?.color}cc, 0 0 40px ${entity?.color}88`, // Brighter glow
-        animation: 'glitch 0.1s infinite',
-        filter: 'brightness(1.5)' // Make it brighter
+        opacity: 0.15 + Math.random() * 0.15, // Much more transparent (0.15-0.3)
+        textShadow: `0 0 30px ${entity?.color}44`, // Subtle glow
+        animation: 'glitch 0.1s infinite'
       }}
     >
       {flashContent}
@@ -535,7 +545,10 @@ export default function HomePage() {
 
           {/* System Info Section */}
         <section className="relative py-20 px-8 border-t transition-all duration-500"
-                 style={{ borderColor: `${currentEntity?.color}20` }}>
+                 style={{ 
+                   borderColor: `${currentEntity?.color}20`,
+                   backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black background
+                 }}>
           <div className="max-w-6xl mx-auto">
             <div className="font-mono" style={{ color: currentEntity?.color }}>
               <h2 className="text-2xl mb-8">
@@ -547,7 +560,7 @@ export default function HomePage() {
                 <div className="border rounded p-6 transition-all duration-500"
                      style={{ 
                        borderColor: `${currentEntity?.color}20`,
-                       backgroundColor: 'rgba(0, 0, 0, 0.95)' // Nearly opaque (95%)
+                       backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">▓▓▓</span>
@@ -565,7 +578,7 @@ export default function HomePage() {
                 <div className="border rounded p-6 transition-all duration-500"
                      style={{ 
                        borderColor: `${currentEntity?.color}20`,
-                       backgroundColor: 'rgba(0, 0, 0, 0.95)' // Nearly opaque (95%)
+                       backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">█▓█</span>
@@ -582,7 +595,7 @@ export default function HomePage() {
                 <div className="border rounded p-6 transition-all duration-500"
                      style={{ 
                        borderColor: `${currentEntity?.color}20`,
-                       backgroundColor: 'rgba(0, 0, 0, 0.95)' // Nearly opaque (95%)
+                       backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">░▒▓</span>
@@ -602,7 +615,10 @@ export default function HomePage() {
           
           {/* Entity Signatures Footer */}
         <footer className="relative border-t py-8 px-8 transition-all duration-500"
-                style={{ borderColor: `${currentEntity?.color}20` }}>
+                style={{ 
+                  borderColor: `${currentEntity?.color}20`,
+                  backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black background
+                }}>
           <div className="max-w-6xl mx-auto">
             <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}66` }}>
               <div className="mb-4">// Active Entity Signatures</div>
