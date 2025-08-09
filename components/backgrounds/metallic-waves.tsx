@@ -70,42 +70,58 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
       for (let y = 0; y < canvas.height; y += 15) {
         ctx.beginPath();
         
-        // Every 3rd line is liquid chrome
-        const isChromeLine = lineCounter % 3 === 0;
+        // Every 2nd line is liquid chrome (more chrome!)
+        const isChromeLine = lineCounter % 2 === 0;
         lineCounter++;
         
         if (isChromeLine) {
-          // Liquid chrome effect - sharp reflective gradients
+          // Intense liquid chrome effect - ultra-sharp reflective gradients
           const chromePhase = Math.sin(timeRef.current * 2 + y * 0.02);
-          const chromeIntensity = Math.abs(Math.sin(timeRef.current * 3 + y * 0.01));
+          const chromeIntensity = 0.5 + Math.abs(Math.sin(timeRef.current * 3 + y * 0.01)) * 0.5;
+          const shimmerPhase = Math.sin(timeRef.current * 8 + y * 0.05); // Fast shimmer
           
-          // Create chrome gradient along the line
+          // Create chrome gradient along the line with multiple reflection points
           const gradient = ctx.createLinearGradient(0, y, canvas.width, y);
           
-          // Chrome has sharp transitions between dark and bright
+          // Hyper-metallic chrome with extreme contrast
           if (chromePhase > 0) {
-            // Bright reflection phase
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${0.7 * chromeIntensity})`);
-            gradient.addColorStop(0.2, `rgba(230, 230, 255, ${0.5 * chromeIntensity})`);
-            gradient.addColorStop(0.4, `rgba(40, 40, 50, ${0.8})`);
-            gradient.addColorStop(0.6, `rgba(255, 255, 255, ${0.9 * chromeIntensity})`);
-            gradient.addColorStop(0.8, `rgba(180, 180, 200, ${0.4 * chromeIntensity})`);
-            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.6 * chromeIntensity})`);
+            // Bright mirror reflection phase - like polished chrome
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${0.95 * chromeIntensity})`);
+            gradient.addColorStop(0.1, `rgba(245, 250, 255, ${0.9 * chromeIntensity})`);
+            gradient.addColorStop(0.15, `rgba(0, 0, 5, 0.95)`); // Sharp black line
+            gradient.addColorStop(0.3, `rgba(255, 255, 255, ${chromeIntensity})`);
+            gradient.addColorStop(0.35, `rgba(220, 225, 235, ${0.8 * chromeIntensity})`);
+            gradient.addColorStop(0.4, `rgba(10, 10, 15, 0.9)`); // Deep black
+            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.95 * chromeIntensity})`);
+            gradient.addColorStop(0.55, `rgba(0, 0, 0, 0.98)`); // Ultra black
+            gradient.addColorStop(0.65, `rgba(250, 252, 255, ${chromeIntensity})`);
+            gradient.addColorStop(0.75, `rgba(180, 185, 195, ${0.7 * chromeIntensity})`);
+            gradient.addColorStop(0.85, `rgba(255, 255, 255, ${0.9 * chromeIntensity})`);
+            gradient.addColorStop(0.9, `rgba(5, 5, 10, 0.9)`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.8 * chromeIntensity})`);
           } else {
-            // Dark reflection phase
-            gradient.addColorStop(0, `rgba(10, 10, 15, ${0.9})`);
-            gradient.addColorStop(0.3, `rgba(30, 30, 40, ${0.7})`);
-            gradient.addColorStop(0.5, `rgba(240, 240, 255, ${0.8 * chromeIntensity})`);
-            gradient.addColorStop(0.7, `rgba(20, 20, 30, ${0.8})`);
-            gradient.addColorStop(1, `rgba(5, 5, 10, ${0.9})`);
+            // Dark chrome phase with bright highlights
+            gradient.addColorStop(0, `rgba(0, 0, 0, 0.98)`); // Pure black
+            gradient.addColorStop(0.1, `rgba(5, 5, 10, 0.95)`);
+            gradient.addColorStop(0.2, `rgba(255, 255, 255, ${chromeIntensity})`); // Bright spike
+            gradient.addColorStop(0.25, `rgba(0, 0, 0, 0.98)`);
+            gradient.addColorStop(0.4, `rgba(15, 15, 20, 0.9)`);
+            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.9 * chromeIntensity})`); // Central highlight
+            gradient.addColorStop(0.55, `rgba(0, 0, 0, 0.99)`);
+            gradient.addColorStop(0.7, `rgba(240, 245, 255, ${0.8 * chromeIntensity})`);
+            gradient.addColorStop(0.75, `rgba(0, 0, 5, 0.95)`);
+            gradient.addColorStop(0.9, `rgba(255, 255, 255, ${0.7 * chromeIntensity})`);
+            gradient.addColorStop(1, `rgba(0, 0, 0, 0.98)`);
           }
           
           ctx.strokeStyle = gradient;
-          ctx.lineWidth = 3; // Slightly thicker for chrome
+          ctx.lineWidth = 4; // Thicker for more presence
           
-          // Add glow effect for chrome
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = chromePhase > 0 ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.8)';
+          // Intense glow/shadow effect for chrome
+          ctx.shadowBlur = 15 + shimmerPhase * 5;
+          ctx.shadowColor = chromePhase > 0 
+            ? `rgba(255, 255, 255, ${0.8 + shimmerPhase * 0.2})` 
+            : `rgba(0, 0, 0, 0.95)`;
         } else {
           // Oil slick rainbow lines
           const lineHue = (hueShift * 2 + y * 0.5 + Math.sin(timeRef.current + y * 0.01) * 60) % 360;
@@ -130,42 +146,60 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
         ctx.stroke();
       }
       
-      // Vertical oil film lines for mesh/interference with chrome accents
+      // Vertical oil film lines for mesh/interference with intense chrome
       let vertLineCounter = 0;
       for (let x = 0; x < canvas.width; x += 15) {
         ctx.beginPath();
         
-        // Every 3rd vertical line is chrome
-        const isChromeLine = vertLineCounter % 3 === 0;
+        // Every 2nd vertical line is chrome (50/50 split)
+        const isChromeLine = vertLineCounter % 2 === 0;
         vertLineCounter++;
         
         if (isChromeLine) {
-          // Vertical chrome reflection
+          // Intense vertical chrome reflection
           const chromePhase = Math.cos(timeRef.current * 2.5 + x * 0.02);
-          const chromeIntensity = Math.abs(Math.sin(timeRef.current * 2 + x * 0.015));
+          const chromeIntensity = 0.6 + Math.abs(Math.sin(timeRef.current * 2 + x * 0.015)) * 0.4;
+          const glintPhase = Math.sin(timeRef.current * 10 + x * 0.1); // Rapid glinting
           
-          // Chrome gradient for vertical lines
+          // Ultra-metallic chrome gradient for vertical lines
           const gradient = ctx.createLinearGradient(x, 0, x, canvas.height);
           
           if (chromePhase > 0) {
-            // Bright metallic sheen
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${0.6 * chromeIntensity})`);
-            gradient.addColorStop(0.3, `rgba(200, 200, 220, ${0.4 * chromeIntensity})`);
-            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.8 * chromeIntensity})`);
-            gradient.addColorStop(0.7, `rgba(150, 150, 170, ${0.3 * chromeIntensity})`);
-            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.5 * chromeIntensity})`);
+            // Hyper-bright metallic sheen
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${chromeIntensity})`);
+            gradient.addColorStop(0.05, `rgba(0, 0, 0, 0.95)`); // Sharp edge
+            gradient.addColorStop(0.2, `rgba(255, 255, 255, ${0.95 * chromeIntensity})`);
+            gradient.addColorStop(0.25, `rgba(200, 205, 220, ${0.7 * chromeIntensity})`);
+            gradient.addColorStop(0.3, `rgba(0, 0, 5, 0.98)`); // Deep black stripe
+            gradient.addColorStop(0.45, `rgba(255, 255, 255, ${chromeIntensity})`);
+            gradient.addColorStop(0.5, `rgba(0, 0, 0, 0.99)`); // Center black
+            gradient.addColorStop(0.55, `rgba(255, 255, 255, ${0.9 * chromeIntensity})`);
+            gradient.addColorStop(0.7, `rgba(150, 155, 170, ${0.6 * chromeIntensity})`);
+            gradient.addColorStop(0.75, `rgba(255, 255, 255, ${chromeIntensity})`);
+            gradient.addColorStop(0.8, `rgba(0, 0, 0, 0.95)`);
+            gradient.addColorStop(0.95, `rgba(255, 255, 255, ${0.8 * chromeIntensity})`);
+            gradient.addColorStop(1, `rgba(0, 0, 0, 0.9)`);
           } else {
-            // Dark chrome shadow
-            gradient.addColorStop(0, `rgba(5, 5, 10, ${0.8})`);
-            gradient.addColorStop(0.4, `rgba(15, 15, 25, ${0.6})`);
-            gradient.addColorStop(0.6, `rgba(220, 220, 240, ${0.7 * chromeIntensity})`);
-            gradient.addColorStop(1, `rgba(10, 10, 20, ${0.7})`);
+            // Dark chrome with mirror highlights
+            gradient.addColorStop(0, `rgba(0, 0, 0, 0.99)`); // Pitch black
+            gradient.addColorStop(0.15, `rgba(255, 255, 255, ${0.9 * chromeIntensity})`); // Sharp highlight
+            gradient.addColorStop(0.2, `rgba(0, 0, 0, 0.98)`);
+            gradient.addColorStop(0.35, `rgba(10, 10, 15, 0.9)`);
+            gradient.addColorStop(0.4, `rgba(255, 255, 255, ${chromeIntensity})`); // Bright streak
+            gradient.addColorStop(0.45, `rgba(0, 0, 0, 0.99)`);
+            gradient.addColorStop(0.6, `rgba(220, 225, 240, ${0.8 * chromeIntensity})`);
+            gradient.addColorStop(0.65, `rgba(0, 0, 5, 0.98)`);
+            gradient.addColorStop(0.8, `rgba(255, 255, 255, ${0.7 * chromeIntensity})`);
+            gradient.addColorStop(0.85, `rgba(0, 0, 0, 0.97)`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.5 * chromeIntensity})`);
           }
           
           ctx.strokeStyle = gradient;
-          ctx.lineWidth = 2;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = chromePhase > 0 ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.6)';
+          ctx.lineWidth = 3; // Thicker chrome lines
+          ctx.shadowBlur = 12 + glintPhase * 8; // Dynamic shadow
+          ctx.shadowColor = chromePhase > 0 
+            ? `rgba(255, 255, 255, ${0.7 + glintPhase * 0.3})` 
+            : `rgba(0, 0, 0, 0.9)`;
         } else {
           // Regular oil rainbow lines
           const lineHue = (hueShift * 3 + x * 0.5 + Math.cos(timeRef.current + x * 0.01) * 90) % 360;
