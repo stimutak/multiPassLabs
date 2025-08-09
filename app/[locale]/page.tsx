@@ -31,8 +31,8 @@ function SubliminalFlash({ entity }: { entity: any }) {
     top: string;
     left: string;
     rotation: number;
-    opacity: number;
     fontSize: number;
+    startTime: number;
   }>>([]);
   
   const messages = [
@@ -64,7 +64,6 @@ function SubliminalFlash({ entity }: { entity: any }) {
         
         // Create 3-8 messages in rapid succession
         const clusterSize = 3 + Math.floor(Math.random() * 6);
-        const newCluster: typeof flashClusters = [];
         
         for (let i = 0; i < clusterSize; i++) {
           setTimeout(() => {
@@ -75,17 +74,16 @@ function SubliminalFlash({ entity }: { entity: any }) {
               top: `${centerTop + (Math.random() - 0.5) * 30}%`,
               left: `${centerLeft + (Math.random() - 0.5) * 30}%`,
               rotation: (Math.random() - 0.5) * 30, // -15 to +15 degrees
-              opacity: 0.1 + Math.random() * 0.2, // 0.1-0.3
-              fontSize: 18 + Math.floor(Math.random() * 12) // 18-30px
+              fontSize: 18 + Math.floor(Math.random() * 12), // 18-30px
+              startTime: Date.now()
             };
             
             setFlashClusters(prev => [...prev, flash]);
             
-            // Remove this flash after 50-200ms
-            const duration = 50 + Math.random() * 150;
+            // Remove this flash after fade completes (500ms)
             setTimeout(() => {
               setFlashClusters(prev => prev.filter(f => f.id !== flash.id));
-            }, duration);
+            }, 500);
           }, i * (20 + Math.random() * 60)); // Stagger by 20-80ms
         }
       }
@@ -106,14 +104,29 @@ function SubliminalFlash({ entity }: { entity: any }) {
             transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
             fontSize: `${flash.fontSize}px`,
             color: entity?.color || '#00ff00',
-            opacity: flash.opacity,
-            textShadow: `0 0 20px ${entity?.color}44`,
-            animation: 'glitch 0.05s infinite'
+            textShadow: `0 0 30px ${entity?.color}66`,
+            animation: 'subliminal-flash 0.5s ease-out forwards'
           }}
         >
           {flash.content}
         </div>
       ))}
+      <style jsx>{`
+        @keyframes subliminal-flash {
+          0% {
+            opacity: 0.8;
+            filter: brightness(1.5);
+          }
+          10% {
+            opacity: 1;
+            filter: brightness(2);
+          }
+          100% {
+            opacity: 0;
+            filter: brightness(1);
+          }
+        }
+      `}</style>
     </>
   );
 }
@@ -577,8 +590,8 @@ export default function HomePage() {
           {/* System Info Section */}
         <section className="relative py-20 px-8 border-t transition-all duration-500 z-10"
                  style={{ 
-                   borderColor: `${currentEntity?.color}20`,
-                   backgroundColor: 'rgb(0, 0, 0)' // Fully opaque black background
+                   borderColor: `${currentEntity?.color}20`
+                   // Removed backgroundColor - section should be transparent
                  }}>
           <div className="max-w-6xl mx-auto">
             <div className="font-mono" style={{ color: currentEntity?.color }}>
@@ -587,24 +600,24 @@ export default function HomePage() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Module Cards - with forced opacity and hover effects */}
+                {/* Module Cards - nearly opaque boxes */}
                 <div className="rounded p-6 transition-all duration-300 cursor-pointer hover:scale-105"
                      style={{ 
                        border: `1px solid ${currentEntity?.color}20`,
-                       backgroundColor: '#000000',
-                       background: '#000000',
-                       opacity: 1,
-                       backdropFilter: 'none'
+                       backgroundColor: 'rgba(0, 0, 0, 0.95)', // Nearly opaque black box
+                       backdropFilter: 'blur(10px)'
                      }}
                      onMouseEnter={(e) => {
                        e.currentTarget.style.border = `1px solid ${currentEntity?.color}`;
                        e.currentTarget.style.boxShadow = `0 0 30px ${currentEntity?.color}40`;
                        e.currentTarget.style.transform = 'scale(1.05)';
+                       e.currentTarget.style.backgroundColor = `rgba(0, 0, 0, 0.98)`;
                      }}
                      onMouseLeave={(e) => {
                        e.currentTarget.style.border = `1px solid ${currentEntity?.color}20`;
                        e.currentTarget.style.boxShadow = 'none';
                        e.currentTarget.style.transform = 'scale(1)';
+                       e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">▓▓▓</span>
@@ -622,20 +635,20 @@ export default function HomePage() {
                 <div className="rounded p-6 transition-all duration-300 cursor-pointer hover:scale-105"
                      style={{ 
                        border: `1px solid ${currentEntity?.color}20`,
-                       backgroundColor: '#000000',
-                       background: '#000000',
-                       opacity: 1,
-                       backdropFilter: 'none'
+                       backgroundColor: 'rgba(0, 0, 0, 0.95)', // Nearly opaque black box
+                       backdropFilter: 'blur(10px)'
                      }}
                      onMouseEnter={(e) => {
                        e.currentTarget.style.border = `1px solid ${currentEntity?.color}`;
                        e.currentTarget.style.boxShadow = `0 0 30px ${currentEntity?.color}40`;
                        e.currentTarget.style.transform = 'scale(1.05)';
+                       e.currentTarget.style.backgroundColor = `rgba(0, 0, 0, 0.98)`;
                      }}
                      onMouseLeave={(e) => {
                        e.currentTarget.style.border = `1px solid ${currentEntity?.color}20`;
                        e.currentTarget.style.boxShadow = 'none';
                        e.currentTarget.style.transform = 'scale(1)';
+                       e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">█▓█</span>
@@ -652,20 +665,20 @@ export default function HomePage() {
                 <div className="rounded p-6 transition-all duration-300 cursor-pointer hover:scale-105"
                      style={{ 
                        border: `1px solid ${currentEntity?.color}20`,
-                       backgroundColor: '#000000',
-                       background: '#000000',
-                       opacity: 1,
-                       backdropFilter: 'none'
+                       backgroundColor: 'rgba(0, 0, 0, 0.95)', // Nearly opaque black box
+                       backdropFilter: 'blur(10px)'
                      }}
                      onMouseEnter={(e) => {
                        e.currentTarget.style.border = `1px solid ${currentEntity?.color}`;
                        e.currentTarget.style.boxShadow = `0 0 30px ${currentEntity?.color}40`;
                        e.currentTarget.style.transform = 'scale(1.05)';
+                       e.currentTarget.style.backgroundColor = `rgba(0, 0, 0, 0.98)`;
                      }}
                      onMouseLeave={(e) => {
                        e.currentTarget.style.border = `1px solid ${currentEntity?.color}20`;
                        e.currentTarget.style.boxShadow = 'none';
                        e.currentTarget.style.transform = 'scale(1)';
+                       e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
                      }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">░▒▓</span>
@@ -686,11 +699,8 @@ export default function HomePage() {
           {/* Entity Signatures Footer */}
         <footer className="relative border-t py-8 px-8 transition-all duration-500 z-10"
                 style={{ 
-                  borderColor: `${currentEntity?.color}20`,
-                  backgroundColor: '#000000',
-                  background: '#000000',
-                  opacity: 1,
-                  backdropFilter: 'none'
+                  borderColor: `${currentEntity?.color}20`
+                  // Removed backgroundColor - footer should be transparent
                 }}>
           <div className="max-w-6xl mx-auto">
             <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}66` }}>
@@ -700,21 +710,27 @@ export default function HomePage() {
                   <div key={entity.id} 
                        style={{ 
                          color: entity.color,
-                         backgroundColor: '#000000',
-                         padding: '4px'
+                         backgroundColor: 'rgba(0, 0, 0, 0.8)', // Semi-transparent boxes for each signature
+                         padding: '8px',
+                         borderRadius: '4px',
+                         border: `1px solid ${entity.color}20`
                        }} 
                        className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
                        onMouseEnter={(e) => {
                          e.currentTarget.style.textShadow = `0 0 10px ${entity.color}66`;
+                         e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+                         e.currentTarget.style.border = `1px solid ${entity.color}`;
                        }}
                        onMouseLeave={(e) => {
                          e.currentTarget.style.textShadow = 'none';
+                         e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                         e.currentTarget.style.border = `1px solid ${entity.color}20`;
                        }}>
                     {entity.signature} v{entity.version}
                   </div>
                 ))}
               </div>
-              <div className="mt-8 text-center" style={{ backgroundColor: '#000000' }}>
+              <div className="mt-8 text-center">
                 © 2025 Multipass Labs Collective | Reality Version: 1.0.0
               </div>
             </div>
