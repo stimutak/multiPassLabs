@@ -23,6 +23,59 @@ function TerminalCursor() {
   return <span className={`${visible ? 'opacity-100' : 'opacity-0'}`}>_</span>;
 }
 
+// Subliminal flash component
+function SubliminalFlash({ entity }: { entity: any }) {
+  const [showFlash, setShowFlash] = useState(false);
+  const [flashContent, setFlashContent] = useState('');
+  
+  const messages = [
+    `[${entity?.signature}] OBSERVING...`,
+    `SIGNAL: ${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+    `COORDINATES: ${Math.floor(Math.random() * 999)}.${Math.floor(Math.random() * 999)}`,
+    `ENTITY ACTIVE: ${entity?.name}`,
+    `FREQUENCY: ${Math.floor(Math.random() * 9999)}Hz`,
+    `ACCESS LEVEL: ${entity?.version}`,
+    `SCANNING...`,
+    `PATTERN DETECTED`,
+    `[REDACTED]`,
+    `▓▓▓▓▓▓▓▓▓`,
+    entity?.glitchPattern || '█▓▒░',
+  ];
+  
+  useEffect(() => {
+    const flashInterval = setInterval(() => {
+      // Only flash occasionally (10% chance)
+      if (Math.random() < 0.1) {
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        setFlashContent(randomMessage || '');
+        setShowFlash(true);
+        
+        // Flash duration between 50-150ms
+        const flashDuration = 50 + Math.random() * 100;
+        setTimeout(() => setShowFlash(false), flashDuration);
+      }
+    }, 2000 + Math.random() * 3000); // Random interval 2-5 seconds
+    
+    return () => clearInterval(flashInterval);
+  }, [entity]);
+  
+  if (!showFlash) return null;
+  
+  return (
+    <div 
+      className="absolute top-4 right-4 font-mono text-xs pointer-events-none"
+      style={{ 
+        color: entity?.color || '#00ff00',
+        opacity: 0.3 + Math.random() * 0.4,
+        textShadow: `0 0 10px ${entity?.color}66`,
+        animation: 'glitch 0.1s infinite'
+      }}
+    >
+      {flashContent}
+    </div>
+  );
+}
+
 // Glitch text component
 function GlitchTextDisplay({ text, className = '' }: { text: string; className?: string }) {
   const [glitched, setGlitched] = useState(text);
@@ -325,11 +378,14 @@ export default function HomePage() {
           <section className="relative min-h-screen flex items-center justify-center p-8">
           <div className="relative z-10 w-full max-w-6xl">
             {/* Terminal Window */}
-            <div className="bg-black/90 border-2 rounded-lg p-8 backdrop-blur-sm transition-all duration-500"
+            <div className="relative bg-black/90 border-2 rounded-lg p-8 backdrop-blur-sm transition-all duration-500"
                  style={{ 
                    borderColor: `${currentEntity?.color}60`,
                    boxShadow: `0 0 30px ${currentEntity?.color}30`
                  }}>
+              {/* Subliminal Flash in top-right */}
+              <SubliminalFlash entity={currentEntity} />
+              
               {/* Terminal Header */}
               <div className="flex items-center justify-between mb-6 pb-4 border-b transition-all duration-500"
                    style={{ borderColor: `${currentEntity?.color}20` }}>
@@ -401,8 +457,9 @@ export default function HomePage() {
               {/* Navigation Commands */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Link href="/en/gallery" className="group">
-                  <div className="bg-black border-2 rounded p-4 transition-all duration-300"
+                  <div className="border-2 rounded p-4 transition-all duration-300"
                        style={{ 
+                         backgroundColor: 'rgba(0,0,0,1)',
                          borderColor: `${currentEntity?.color}60`,
                          boxShadow: `0 0 20px ${currentEntity?.color}10`
                        }}
@@ -424,8 +481,9 @@ export default function HomePage() {
                 </Link>
                 
                 <Link href="/en/blog" className="group">
-                  <div className="bg-black border-2 rounded p-4 transition-all duration-300"
+                  <div className="border-2 rounded p-4 transition-all duration-300"
                        style={{ 
+                         backgroundColor: 'rgba(0,0,0,1)',
                          borderColor: `${currentEntity?.color}60`,
                          boxShadow: `0 0 20px ${currentEntity?.color}10`
                        }}
@@ -447,8 +505,9 @@ export default function HomePage() {
                 </Link>
                 
                 <Link href="/en/music" className="group">
-                  <div className="bg-black border-2 rounded p-4 transition-all duration-300"
+                  <div className="border-2 rounded p-4 transition-all duration-300"
                        style={{ 
+                         backgroundColor: 'rgba(0,0,0,1)',
                          borderColor: `${currentEntity?.color}60`,
                          boxShadow: `0 0 20px ${currentEntity?.color}10`
                        }}
