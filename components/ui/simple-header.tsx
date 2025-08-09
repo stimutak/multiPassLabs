@@ -14,6 +14,12 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
   const [currentTime, setCurrentTime] = useState('');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
+  const handleReplayBoot = () => {
+    // Clear the flag and reload to show boot animation
+    localStorage.removeItem('hasSeenBootAnimation');
+    window.location.href = '/en';
+  };
+  
   useEffect(() => {
     const updateTime = () => {
       setCurrentTime(new Date().toLocaleTimeString('en-US', { 
@@ -47,9 +53,13 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
             </div>
           </div>
           
-          <span className="text-green-400/60 text-[10px]">
-            {currentTime ? currentTime.substring(0, 5) : '00:00'}
-          </span>
+          <button
+            onClick={handleReplayBoot}
+            className="text-green-400/40 hover:text-green-400 transition-colors text-[10px] font-mono"
+            title="Replay boot sequence"
+          >
+            [BOOT]
+          </button>
         </div>
         
         {/* Mobile navigation - horizontal scroll */}
@@ -115,6 +125,14 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
           <span className="text-green-400/60">
             {currentTime || '00:00:00'}
           </span>
+          <span className="text-green-400/40">|</span>
+          <button
+            onClick={handleReplayBoot}
+            className="text-green-400/60 hover:text-green-400 transition-colors font-mono text-xs"
+            title="Replay boot sequence"
+          >
+            [REPLAY BOOT]
+          </button>
         </div>
       </nav>
     </header>

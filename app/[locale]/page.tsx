@@ -6,6 +6,10 @@ import Link from 'next/link';
 import { LAB_ENTITIES, getRandomEntity, glitchText } from '@/lib/entities';
 import { motion } from 'framer-motion';
 import { EntityAnimationBackground } from '@/components/backgrounds/entity-animations';
+import dynamic from 'next/dynamic';
+
+// Dynamically import to avoid SSR issues
+const StartupIntroV2 = dynamic(() => import('@/components/ui/startup-intro-v2'), { ssr: false });
 
 // Terminal cursor component
 function TerminalCursor() {
@@ -60,44 +64,150 @@ function TerminalLine({ children, prefix = '>', delay = 0, color = '#00f4ff' }: 
   );
 }
 
+// Quick intro animation for returning visitors
+function QuickIntro({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState<'flash' | 'glitch' | 'ready'>('flash');
+  
+  useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+    
+    // Flash logo
+    timers.push(setTimeout(() => setPhase('glitch'), 300));
+    
+    // Glitch into existence
+    timers.push(setTimeout(() => setPhase('ready'), 800));
+    
+    // Complete
+    timers.push(setTimeout(() => onComplete(), 1200));
+    
+    return () => timers.forEach(timer => clearTimeout(timer));
+  }, [onComplete]);
+  
+  return (
+    <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+      {phase === 'flash' && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: [0, 1, 0.8, 1], scale: [0.5, 1.1, 0.95, 1] }}
+          transition={{ duration: 0.3 }}
+        >
+          <pre className="font-mono text-green-400 text-xs leading-tight"
+            style={{ textShadow: '0 0 20px #00ff00' }}
+          >
+{`╔══════════════════════════════════════════════╗
+║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓         ║
+║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓         ║
+║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓         ║
+║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓         ║
+║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓         ║
+╚══════════════════════════════════════════════╝`}
+          </pre>
+        </motion.div>
+      )}
+      
+      {phase === 'glitch' && (
+        <motion.div
+          animate={{ 
+            opacity: [1, 0.2, 1, 0.5, 1],
+            y: [0, -5, 5, -2, 0]
+          }}
+          transition={{ duration: 0.5 }}
+          className="relative"
+        >
+          {/* Glitch lines */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-full bg-green-400/20"
+                style={{
+                  height: Math.random() * 20 + 5,
+                  top: `${Math.random() * 100}%`,
+                  animation: `glitch-shift ${0.1 + Math.random() * 0.2}s infinite`
+                }}
+              />
+            ))}
+          </div>
+          
+          <pre className="font-mono text-green-400 text-xs leading-tight relative"
+            style={{ 
+              textShadow: '0 0 10px #00ff00',
+              filter: 'brightness(1.5)'
+            }}
+          >
+{`╔══════════════════════════════════════════════╗
+║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓         ║
+║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓         ║
+║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓         ║
+║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓         ║
+║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓         ║
+╚══════════════════════════════════════════════╝`}
+          </pre>
+        </motion.div>
+      )}
+      
+      {phase === 'ready' && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <pre className="font-mono text-green-400 text-xs leading-tight"
+            style={{ textShadow: '0 0 5px #00ff00' }}
+          >
+{`╔══════════════════════════════════════════════╗
+║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓         ║
+║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓         ║
+║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓         ║
+║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓         ║
+║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓         ║
+╚══════════════════════════════════════════════╝`}
+          </pre>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 export default function HomePage() {
   // Start with an entity that has an implemented animation
   const initialEntity = LAB_ENTITIES.find(e => e.animation === 'oscilloscope') || LAB_ENTITIES[0]!;
   const [currentEntity, setCurrentEntity] = useState(initialEntity);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const [showLogo, setShowLogo] = useState(true);
+  const [showFullBoot, setShowFullBoot] = useState(false);
+  const [showQuickIntro, setShowQuickIntro] = useState(false);
   const [contentRevealed, setContentRevealed] = useState(false);
-  const [glitchActive, setGlitchActive] = useState(false);
   const [entityQueue, setEntityQueue] = useState<typeof LAB_ENTITIES>([]);
   const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
+  const [bootChecked, setBootChecked] = useState(false);
   
   // Get current animation type
   const animationType = currentEntity?.animation || 'oscilloscope';
   
   useEffect(() => {
-    // Initial logo display for 2 seconds
-    const logoTimer = setTimeout(() => {
-      setShowLogo(false);
-      // Start glitch/strobe effect
-      setGlitchActive(true);
-      
-      // Strobe effect - flash content in
-      let strobeCount = 0;
-      const strobeInterval = setInterval(() => {
-        setContentRevealed(prev => !prev);
-        strobeCount++;
-        
-        // After 8 flashes (4 on/off cycles), stay on
-        if (strobeCount >= 8) {
-          clearInterval(strobeInterval);
-          setContentRevealed(true);
-          setGlitchActive(false);
-        }
-      }, 100); // Fast strobe effect
-    }, 2000);
-
-    return () => clearTimeout(logoTimer);
+    // Check if user has seen boot animation before
+    const hasSeenBoot = localStorage.getItem('hasSeenBootAnimation');
+    
+    if (!hasSeenBoot) {
+      // First time visitor - show full boot
+      setShowFullBoot(true);
+    } else {
+      // Returning visitor - show quick intro
+      setShowQuickIntro(true);
+    }
+    setBootChecked(true);
   }, []);
+  
+  const handleBootComplete = () => {
+    localStorage.setItem('hasSeenBootAnimation', 'true');
+    setShowFullBoot(false);
+    setContentRevealed(true);
+  };
+  
+  const handleQuickIntroComplete = () => {
+    setShowQuickIntro(false);
+    setContentRevealed(true);
+  };
 
   // Shuffle function to randomize array
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -175,64 +285,30 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Show loading state while checking localStorage
+  if (!bootChecked) {
+    return <div className="fixed inset-0 bg-black" />;
+  }
+
+  // Show full boot animation for first-time visitors
+  if (showFullBoot) {
+    return <StartupIntroV2 onComplete={handleBootComplete} />;
+  }
+
+  // Show quick intro for returning visitors
+  if (showQuickIntro) {
+    return <QuickIntro onComplete={handleQuickIntroComplete} />;
+  }
+
   return (
     <>
-      {!showLogo && <SimpleHeader currentEntity={currentEntity} />}
+      {/* Show header only after intro/boot is complete */}
+      <SimpleHeader currentEntity={currentEntity} />
       
       <main className="relative min-h-screen bg-black pt-20 md:pt-12">
-        {/* Show logo first */}
-        {showLogo && (
-          <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: [0, 1, 0.9, 1],
-                scale: [0.8, 1, 1.02, 1],
-              }}
-              transition={{ duration: 0.5, times: [0, 0.3, 0.6, 1] }}
-              className="relative"
-            >
-              {/* Lightning bolts around logo */}
-              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-yellow-400 text-2xl animate-pulse">⚡</div>
-              <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.5s' }}>⚡</div>
-              <div className="absolute top-1/2 -left-10 transform -translate-y-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.25s' }}>⚡</div>
-              <div className="absolute top-1/2 -right-10 transform -translate-y-1/2 text-yellow-400 text-2xl animate-pulse" style={{ animationDelay: '0.75s' }}>⚡</div>
-              
-              <pre className="font-mono text-green-400 text-xs leading-tight"
-                style={{
-                  textShadow: '0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00',
-                  filter: 'brightness(1.2)'
-                }}
-              >
-{`
-╔══════════════════════════════════════════════╗
-║                                              ║
-║   ███╗   ███╗██████╗ ██╗      ▓▓▓▓▓▓         ║
-║   ████╗ ████║██╔══██╗██║      ▓▓▓▓▓▓         ║
-║   ██╔████╔██║██████╔╝██║      ▓▓▓▓▓▓         ║
-║   ██║╚██╔╝██║██╔═══╝ ██║      ▓▓▓▓▓▓         ║
-║   ██║ ╚═╝ ██║██║     ███████╗ ▓▓▓▓▓▓         ║
-║   ╚═╝     ╚═╝╚═╝     ╚══════╝                ║
-║                                              ║
-║   M U L T I P A S S   L A B S   [v1.0.0]     ║
-║                                              ║
-╚══════════════════════════════════════════════╝
-`}
-              </pre>
-            </motion.div>
-          </div>
-        )}
 
-        {/* Glitch overlay during transition */}
-        {glitchActive && (
-          <div className="fixed inset-0 z-40 pointer-events-none">
-            <div className="absolute inset-0 bg-green-500/20 mix-blend-screen animate-pulse" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent animate-scan" />
-          </div>
-        )}
-
-        {/* Main content with strobe reveal */}
-        <div className={`${contentRevealed ? 'opacity-100' : 'opacity-0'} ${glitchActive ? 'animate-glitch' : ''} transition-opacity duration-100`}>
+        {/* Main content */}
+        <div className="opacity-100">
           {/* Entity-based animation background */}
           <EntityAnimationBackground 
             entityColor={currentEntity?.color || '#00f4ff'} 
@@ -248,10 +324,10 @@ export default function HomePage() {
           <section className="relative min-h-screen flex items-center justify-center p-8">
           <div className="relative z-10 w-full max-w-6xl">
             {/* Terminal Window */}
-            <div className="bg-black/90 border rounded-lg p-8 backdrop-blur-sm transition-all duration-500"
+            <div className="bg-black/90 border-2 rounded-lg p-8 backdrop-blur-sm transition-all duration-500"
                  style={{ 
-                   borderColor: `${currentEntity?.color}40`,
-                   boxShadow: `0 0 30px ${currentEntity?.color}20`
+                   borderColor: `${currentEntity?.color}60`,
+                   boxShadow: `0 0 30px ${currentEntity?.color}30`
                  }}>
               {/* Terminal Header */}
               <div className="flex items-center justify-between mb-6 pb-4 border-b transition-all duration-500"
@@ -326,14 +402,15 @@ export default function HomePage() {
                 <Link href="/en/gallery" className="group">
                   <div className="bg-black/50 border rounded p-4 transition-all duration-300"
                        style={{ 
-                         borderColor: `${currentEntity?.color}30`
+                         borderColor: `${currentEntity?.color}60`,
+                         boxShadow: `0 0 20px ${currentEntity?.color}10`
                        }}
                        onMouseEnter={(e) => {
                          e.currentTarget.style.borderColor = currentEntity?.color || '';
                          e.currentTarget.style.backgroundColor = `${currentEntity?.color}10`;
                        }}
                        onMouseLeave={(e) => {
-                         e.currentTarget.style.borderColor = `${currentEntity?.color}30`;
+                         e.currentTarget.style.borderColor = `${currentEntity?.color}60`;
                          e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
                        }}>
                     <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
@@ -345,24 +422,25 @@ export default function HomePage() {
                   </div>
                 </Link>
                 
-                <Link href="/en/shop" className="group">
+                <Link href="/en/blog" className="group">
                   <div className="bg-black/50 border rounded p-4 transition-all duration-300"
                        style={{ 
-                         borderColor: `${currentEntity?.color}30`
+                         borderColor: `${currentEntity?.color}60`,
+                         boxShadow: `0 0 20px ${currentEntity?.color}10`
                        }}
                        onMouseEnter={(e) => {
                          e.currentTarget.style.borderColor = currentEntity?.color || '';
                          e.currentTarget.style.backgroundColor = `${currentEntity?.color}10`;
                        }}
                        onMouseLeave={(e) => {
-                         e.currentTarget.style.borderColor = `${currentEntity?.color}30`;
+                         e.currentTarget.style.borderColor = `${currentEntity?.color}60`;
                          e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
                        }}>
                     <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
-                      $ <span style={{ color: '#ffe95c' }}>cd</span> /shop
+                      $ <span style={{ color: '#ffe95c' }}>cd</span> /blog
                     </div>
                     <div className="font-mono text-xs" style={{ color: `${currentEntity?.color}99` }}>
-                      // Digital artifacts marketplace
+                      // Experimental transmissions & discoveries
                     </div>
                   </div>
                 </Link>
@@ -370,14 +448,15 @@ export default function HomePage() {
                 <Link href="/en/music" className="group">
                   <div className="bg-black/50 border rounded p-4 transition-all duration-300"
                        style={{ 
-                         borderColor: `${currentEntity?.color}30`
+                         borderColor: `${currentEntity?.color}60`,
+                         boxShadow: `0 0 20px ${currentEntity?.color}10`
                        }}
                        onMouseEnter={(e) => {
                          e.currentTarget.style.borderColor = currentEntity?.color || '';
                          e.currentTarget.style.backgroundColor = `${currentEntity?.color}10`;
                        }}
                        onMouseLeave={(e) => {
-                         e.currentTarget.style.borderColor = `${currentEntity?.color}30`;
+                         e.currentTarget.style.borderColor = `${currentEntity?.color}60`;
                          e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
                        }}>
                     <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
