@@ -33,6 +33,7 @@ function SubliminalFlash({ entity }: { entity: any }) {
     rotation: number;
     fontSize: number;
     startTime: number;
+    isGhost: boolean;
   }>>([]);
   
   const messages = [
@@ -67,24 +68,52 @@ function SubliminalFlash({ entity }: { entity: any }) {
         
         for (let i = 0; i < clusterSize; i++) {
           setTimeout(() => {
+            const flashId = Date.now() + Math.random();
+            const flashContent = messages[Math.floor(Math.random() * messages.length)] || '';
+            const flashTop = `${centerTop + (Math.random() - 0.5) * 20}%`;
+            const flashLeft = `${centerLeft + (Math.random() - 0.5) * 20}%`;
+            const flashRotation = (Math.random() - 0.5) * 30;
+            const flashFontSize = 18 + Math.floor(Math.random() * 12);
+            
+            // Main flash - very brief
             const flash = {
-              id: Date.now() + Math.random(),
-              content: messages[Math.floor(Math.random() * messages.length)] || '',
-              // Spread around center point within 10% radius
-              top: `${centerTop + (Math.random() - 0.5) * 20}%`,
-              left: `${centerLeft + (Math.random() - 0.5) * 20}%`,
-              rotation: (Math.random() - 0.5) * 30, // -15 to +15 degrees
-              fontSize: 18 + Math.floor(Math.random() * 12), // 18-30px
-              startTime: Date.now()
+              id: flashId,
+              content: flashContent,
+              top: flashTop,
+              left: flashLeft,
+              rotation: flashRotation,
+              fontSize: flashFontSize,
+              startTime: Date.now(),
+              isGhost: false
             };
             
             setFlashClusters(prev => [...prev, flash]);
             
-            // Remove this flash after fade completes (500ms)
+            // Remove main flash very quickly (30-60ms)
+            const flashDuration = 30 + Math.random() * 30;
             setTimeout(() => {
-              setFlashClusters(prev => prev.filter(f => f.id !== flash.id));
-            }, 500);
-          }, i * (20 + Math.random() * 60)); // Stagger by 20-80ms
+              setFlashClusters(prev => prev.filter(f => f.id !== flashId));
+              
+              // Add ghost immediately after
+              const ghost = {
+                id: flashId + 0.1,
+                content: flashContent,
+                top: flashTop,
+                left: flashLeft,
+                rotation: flashRotation,
+                fontSize: flashFontSize,
+                startTime: Date.now(),
+                isGhost: true
+              };
+              
+              setFlashClusters(prev => [...prev, ghost]);
+              
+              // Remove ghost after brief fade (150-250ms)
+              setTimeout(() => {
+                setFlashClusters(prev => prev.filter(f => f.id !== ghost.id));
+              }, 150 + Math.random() * 100);
+            }, flashDuration);
+          }, i * (10 + Math.random() * 30)); // Faster stagger (10-40ms)
         }
       }
     }, 2000 + Math.random() * 3000); // Check every 2-5 seconds
@@ -95,40 +124,58 @@ function SubliminalFlash({ entity }: { entity: any }) {
   return (
     <>
       {flashClusters.map(flash => {
-        // Random opacity for each flash message
-        const maxOpacity = 0.15 + Math.random() * 0.15; // 0.15-0.3 max opacity
-        return (
-          <div 
-            key={flash.id}
-            className="absolute font-mono pointer-events-none"
-            style={{ 
-              top: flash.top,
-              left: flash.left,
-              transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
-              fontSize: `${flash.fontSize}px`,
-              color: entity?.color || '#00ff00',
-              textShadow: `0 0 20px ${entity?.color}33`,
-              animation: 'subliminal-flash 0.5s ease-out forwards',
-              '--max-opacity': maxOpacity
-            } as React.CSSProperties}
-          >
-            {flash.content}
-          </div>
-        );
+        // Different behavior for main flash vs ghost
+        if (flash.isGhost) {
+          // Ghost - faint afterimage that fades
+          return (
+            <div 
+              key={flash.id}
+              className="absolute font-mono pointer-events-none"
+              style={{ 
+                top: flash.top,
+                left: flash.left,
+                transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
+                fontSize: `${flash.fontSize}px`,
+                color: entity?.color || '#00ff00',
+                textShadow: `0 0 10px ${entity?.color}22`,
+                animation: 'ghost-fade 0.2s ease-out forwards',
+                opacity: 0.08
+              }}
+            >
+              {flash.content}
+            </div>
+          );
+        } else {
+          // Main flash - bright and instant
+          return (
+            <div 
+              key={flash.id}
+              className="absolute font-mono pointer-events-none"
+              style={{ 
+                top: flash.top,
+                left: flash.left,
+                transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
+                fontSize: `${flash.fontSize}px`,
+                color: entity?.color || '#00ff00',
+                textShadow: `0 0 25px ${entity?.color}44`,
+                opacity: 0.3 + Math.random() * 0.2, // 0.3-0.5 for main flash
+                filter: 'brightness(1.3)'
+              }}
+            >
+              {flash.content}
+            </div>
+          );
+        }
       })}
       <style jsx>{`
-        @keyframes subliminal-flash {
+        @keyframes ghost-fade {
           0% {
-            opacity: var(--max-opacity, 0.2);
-            filter: brightness(1.1);
-          }
-          10% {
-            opacity: calc(var(--max-opacity, 0.2) * 1.2);
-            filter: brightness(1.2);
+            opacity: 0.08;
+            filter: blur(0px);
           }
           100% {
             opacity: 0;
-            filter: brightness(1);
+            filter: blur(2px);
           }
         }
       `}</style>
