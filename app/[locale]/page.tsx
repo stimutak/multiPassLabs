@@ -58,9 +58,9 @@ function SubliminalFlash({ entity }: { entity: any }) {
     const flashInterval = setInterval(() => {
       // 30% chance to trigger a cluster
       if (Math.random() < 0.3) {
-        // Center point for the cluster - constrained to right half and middle 2/3 vertically
+        // Center point for the cluster - constrained to right 2/3 and middle 2/3 vertically
         const centerTop = 17 + Math.random() * 66; // Middle 2/3 vertically (17-83%)
-        const centerLeft = 50 + Math.random() * 40; // Right half horizontally (50-90%)
+        const centerLeft = 33 + Math.random() * 57; // Right 2/3 horizontally (33-90%)
         
         // Create 3-8 messages in rapid succession
         const clusterSize = 3 + Math.floor(Math.random() * 6);
