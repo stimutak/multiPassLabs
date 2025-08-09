@@ -5,54 +5,26 @@ import { useTranslations, useLocale } from 'next-intl';
 
 import { LAB_ENTITIES } from '@/lib/entities';
 import { PostCard } from '@/components/ui/post-card';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  excerpt: string | null;
-  slug: string;
-  featured: boolean;
-  published: boolean;
-  entityId: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { BLOG_POSTS, type BlogPost } from '@/lib/blog-data';
 
 export default function BlogPage() {
   const t = useTranslations('blog');
   const locale = useLocale();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const queryParams = new URLSearchParams({
-          published: 'true',
-          limit: '20',
-          ...(selectedEntity && { entityId: selectedEntity })
-        });
-        
-        const response = await fetch(`/api/posts?${queryParams}`);
-        if (response.ok) {
-          const data = await response.json();
-          setPosts(data.map((post: any) => ({
-            ...post,
-            createdAt: new Date(post.createdAt).toISOString(),
-            updatedAt: new Date(post.updatedAt).toISOString()
-          })));
-        }
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      // Filter posts based on selected entity
+      const filteredPosts = selectedEntity 
+        ? BLOG_POSTS.filter(post => post.published && post.entityId === selectedEntity)
+        : BLOG_POSTS.filter(post => post.published);
+      
+      setPosts(filteredPosts);
+      setLoading(false);
+    }, 300);
   }, [selectedEntity]);
 
   const featuredPosts = posts.filter(post => post.featured);
