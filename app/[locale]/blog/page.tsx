@@ -55,8 +55,8 @@ export default function BlogPage() {
       <SimpleHeader currentEntity={currentEntity} />
       <MetallicWaves entityColor={currentEntity?.color} />
       
-      <main className="min-h-screen pt-24 md:pt-16 p-8">
-      <div className="max-w-7xl mx-auto">
+      <main className="relative min-h-screen pt-24 md:pt-16 p-8 z-10">
+      <div className="max-w-7xl mx-auto relative">
         {/* Header - Terminal Style */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

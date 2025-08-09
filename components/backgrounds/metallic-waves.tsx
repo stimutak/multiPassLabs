@@ -51,11 +51,11 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
       
       // Draw metallic sheet background with gradient
       const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      bgGradient.addColorStop(0, `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift)}, 0.03)`);
-      bgGradient.addColorStop(0.3, `rgba(${Math.min(255, baseColor.r + colorShift + 40)}, ${Math.min(255, baseColor.g + colorShift + 40)}, ${Math.min(255, baseColor.b + colorShift + 40)}, 0.05)`);
-      bgGradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.02 * shimmer})`); // White highlight for metallic sheen
-      bgGradient.addColorStop(0.7, `rgba(${Math.max(0, baseColor.r - 30)}, ${Math.max(0, baseColor.g - 30)}, ${Math.max(0, baseColor.b - 30)}, 0.04)`);
-      bgGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.02)`);
+      bgGradient.addColorStop(0, `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift)}, 0.1)`);
+      bgGradient.addColorStop(0.3, `rgba(${Math.min(255, baseColor.r + colorShift + 40)}, ${Math.min(255, baseColor.g + colorShift + 40)}, ${Math.min(255, baseColor.b + colorShift + 40)}, 0.15)`);
+      bgGradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.05 * shimmer})`); // White highlight for metallic sheen
+      bgGradient.addColorStop(0.7, `rgba(${Math.max(0, baseColor.r - 30)}, ${Math.max(0, baseColor.g - 30)}, ${Math.max(0, baseColor.b - 30)}, 0.1)`);
+      bgGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.08)`);
       
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -63,7 +63,7 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
       // Draw metallic sheets as mesh grid that undulates
       for (let y = 0; y < canvas.height; y += 20) {
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift)}, ${0.1 + shimmer * 0.1})`;
+        ctx.strokeStyle = `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift)}, ${0.3 + shimmer * 0.2})`;
         ctx.lineWidth = 1;
         
         for (let x = 0; x <= canvas.width; x += 10) {
@@ -83,7 +83,7 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
       // Vertical lines for mesh/interference
       for (let x = 0; x < canvas.width; x += 20) {
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.02 + shimmer * 0.03})`; // White for metallic highlights
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 + shimmer * 0.1})`; // White for metallic highlights
         ctx.lineWidth = 0.5;
         
         for (let y = 0; y <= canvas.height; y += 10) {
@@ -108,8 +108,8 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
         const radius = 100 + Math.sin(timeRef.current * 2 + i) * 50;
         
         const highlightGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${0.1 * shimmer})`);
-        highlightGradient.addColorStop(0.5, `rgba(${baseColor.r + 50}, ${baseColor.g + 50}, ${baseColor.b + 50}, ${0.05 * shimmer})`);
+        highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${0.2 * shimmer})`);
+        highlightGradient.addColorStop(0.5, `rgba(${Math.min(255, baseColor.r + 50)}, ${Math.min(255, baseColor.g + 50)}, ${Math.min(255, baseColor.b + 50)}, ${0.1 * shimmer})`);
         highlightGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         
         ctx.fillStyle = highlightGradient;
@@ -132,8 +132,7 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
   return (
     <canvas 
       ref={canvasRef}
-      className="fixed inset-0 opacity-30 pointer-events-none"
-      style={{ mixBlendMode: 'screen' }}
+      className="fixed inset-0 opacity-60 pointer-events-none z-0"
     />
   );
 }
