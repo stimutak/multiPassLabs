@@ -58,9 +58,9 @@ function SubliminalFlash({ entity }: { entity: any }) {
     const flashInterval = setInterval(() => {
       // 30% chance to trigger a cluster
       if (Math.random() < 0.3) {
-        // Center point for the cluster
-        const centerTop = 20 + Math.random() * 60;
-        const centerLeft = 10 + Math.random() * 70;
+        // Center point for the cluster - constrained to right half and middle 2/3 vertically
+        const centerTop = 17 + Math.random() * 66; // Middle 2/3 vertically (17-83%)
+        const centerLeft = 50 + Math.random() * 40; // Right half horizontally (50-90%)
         
         // Create 3-8 messages in rapid succession
         const clusterSize = 3 + Math.floor(Math.random() * 6);
@@ -70,9 +70,9 @@ function SubliminalFlash({ entity }: { entity: any }) {
             const flash = {
               id: Date.now() + Math.random(),
               content: messages[Math.floor(Math.random() * messages.length)] || '',
-              // Spread around center point within 15% radius
-              top: `${centerTop + (Math.random() - 0.5) * 30}%`,
-              left: `${centerLeft + (Math.random() - 0.5) * 30}%`,
+              // Spread around center point within 10% radius
+              top: `${centerTop + (Math.random() - 0.5) * 20}%`,
+              left: `${centerLeft + (Math.random() - 0.5) * 20}%`,
               rotation: (Math.random() - 0.5) * 30, // -15 to +15 degrees
               fontSize: 18 + Math.floor(Math.random() * 12), // 18-30px
               startTime: Date.now()
@@ -94,32 +94,37 @@ function SubliminalFlash({ entity }: { entity: any }) {
   
   return (
     <>
-      {flashClusters.map(flash => (
-        <div 
-          key={flash.id}
-          className="absolute font-mono pointer-events-none"
-          style={{ 
-            top: flash.top,
-            left: flash.left,
-            transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
-            fontSize: `${flash.fontSize}px`,
-            color: entity?.color || '#00ff00',
-            textShadow: `0 0 30px ${entity?.color}66`,
-            animation: 'subliminal-flash 0.5s ease-out forwards'
-          }}
-        >
-          {flash.content}
-        </div>
-      ))}
+      {flashClusters.map(flash => {
+        // Random opacity for each flash message
+        const maxOpacity = 0.15 + Math.random() * 0.15; // 0.15-0.3 max opacity
+        return (
+          <div 
+            key={flash.id}
+            className="absolute font-mono pointer-events-none"
+            style={{ 
+              top: flash.top,
+              left: flash.left,
+              transform: `translate(-50%, -50%) rotate(${flash.rotation}deg)`,
+              fontSize: `${flash.fontSize}px`,
+              color: entity?.color || '#00ff00',
+              textShadow: `0 0 20px ${entity?.color}33`,
+              animation: 'subliminal-flash 0.5s ease-out forwards',
+              '--max-opacity': maxOpacity
+            } as React.CSSProperties}
+          >
+            {flash.content}
+          </div>
+        );
+      })}
       <style jsx>{`
         @keyframes subliminal-flash {
           0% {
-            opacity: 0.8;
-            filter: brightness(1.5);
+            opacity: var(--max-opacity, 0.2);
+            filter: brightness(1.1);
           }
           10% {
-            opacity: 1;
-            filter: brightness(2);
+            opacity: calc(var(--max-opacity, 0.2) * 1.2);
+            filter: brightness(1.2);
           }
           100% {
             opacity: 0;
