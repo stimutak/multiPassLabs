@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 
@@ -42,6 +42,9 @@ export const metadata: Metadata = {
       { rel: 'manifest', url: '/site.webmanifest' }
     ]
   },
+};
+
+export const viewport: Viewport = {
   themeColor: '#000000',
 };
 
@@ -51,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         {children}
       </body>

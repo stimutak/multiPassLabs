@@ -14,10 +14,49 @@ export interface BlogPost {
   updatedAt: string;
 }
 
-// Get a random entity for post attribution
-function getRandomEntityId(): string {
-  const randomIndex = Math.floor(Math.random() * LAB_ENTITIES.length);
-  return LAB_ENTITIES[randomIndex]?.id || 'null-form';
+// Get a deterministic "random" entity based on a string seed (like post ID or title)
+// This creates consistent pseudo-random assignment
+function getSeededEntityId(seed: string): string {
+  // Simple hash function to convert string to number
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  // Use the hash to pick an entity
+  const entityIndex = Math.abs(hash) % LAB_ENTITIES.length;
+  return LAB_ENTITIES[entityIndex]?.id || 'null-form';
+}
+
+// Entity expertise mapping (add your overrides here)
+const ENTITY_EXPERTISE: Record<string, string[]> = {
+  'noise-path': ['audio', 'sound', 'music', 'synthesis', 'dsp'],
+  'xeno-form': ['generative', 'ai', 'ml', 'neural', 'gan'],
+  'ctrl-noir': ['ui', 'interface', 'frontend', 'css', 'design'],
+  'filament': ['shaders', 'graphics', 'webgl', 'three', 'visual'],
+  // Add more as you define entity specialties
+};
+
+// Get entity ID with optional override based on tags/keywords
+function getPostEntityId(slug: string, tags?: string[]): string {
+  // Check if any tags match an entity's expertise
+  if (tags) {
+    for (const [entityId, keywords] of Object.entries(ENTITY_EXPERTISE)) {
+      const hasMatch = tags.some(tag => 
+        keywords.some(keyword => 
+          tag.toLowerCase().includes(keyword)
+        )
+      );
+      if (hasMatch) {
+        return entityId; // Override with expert entity
+      }
+    }
+  }
+  
+  // Fall back to seeded random
+  return getSeededEntityId(slug);
 }
 
 // Static blog posts
@@ -124,10 +163,10 @@ A one-line update could turn it from "meh" to GPT-5-level code generation and de
     slug: 'gpt5-codex-cli-macos-update',
     featured: false,
     published: true,
-    entityId: getRandomEntityId(),
+    entityId: 'xeno-form', // Manual override: x3n0.form handles AI topics
     tags: ['GPT-5', 'Codex', 'CLI', 'macOS', 'development-tools', 'AI'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: '2025-01-09T12:00:00.000Z',
+    updatedAt: '2025-01-09T12:00:00.000Z'
   }
 ];
 

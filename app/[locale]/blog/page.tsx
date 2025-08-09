@@ -7,7 +7,6 @@ import { LAB_ENTITIES, getEntityById } from '@/lib/entities';
 import { PostCard } from '@/components/ui/post-card';
 import { BLOG_POSTS, type BlogPost } from '@/lib/blog-data';
 import { MetallicWaves } from '@/components/backgrounds/metallic-waves';
-import { motion } from 'framer-motion';
 
 export default function BlogPage() {
   const locale = useLocale();
@@ -61,9 +60,7 @@ export default function BlogPage() {
       <main className="relative min-h-screen pt-32 md:pt-24 p-8 z-10">
       <div className="max-w-7xl mx-auto relative">
         {/* Header - Terminal Style */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div 
           className="mb-12 border-2 rounded-lg p-6 bg-black/90 backdrop-blur-sm"
           style={{ 
             borderColor: `${currentEntity?.color}60`,
@@ -74,7 +71,7 @@ export default function BlogPage() {
             <div className="w-2 h-2 rounded-full bg-red-500" />
             <div className="w-2 h-2 rounded-full bg-yellow-500" />
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="ml-4 text-xs font-mono" style={{ color: `${currentEntity?.color}99` }}>
+            <span className="ml-4 text-xs font-mono" style={{ color: currentEntity?.color, opacity: 0.6 }}>
               transmissions@multipass.labs ~ {currentEntity?.signature || '[UNKNOWN]'}
             </span>
           </div>
@@ -83,14 +80,14 @@ export default function BlogPage() {
             <div className="text-2xl mb-2" style={{ color: currentEntity?.color }}>
               [BLOG] EXPERIMENTAL TRANSMISSIONS
             </div>
-            <div className="text-sm" style={{ color: `${currentEntity?.color}80` }}>
-              $ ls -la /var/log/transmissions/
+            <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
+              $ <span style={{ color: '#ffe95c' }}>ls -la</span> /var/log/transmissions/
             </div>
-            <div className="text-sm mt-2" style={{ color: `${currentEntity?.color}60` }}>
+            <div className="text-sm mt-2" style={{ color: currentEntity?.color, opacity: 0.4 }}>
               {'>'} {BLOG_POSTS.filter(p => p.published).length} transmissions found | {LAB_ENTITIES.length} entities active
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Entity Filter */}
         <div className="mb-8">
