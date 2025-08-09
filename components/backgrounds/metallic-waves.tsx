@@ -65,15 +65,56 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw oil slick waves with rainbow interference
+      // Draw oil slick waves with rainbow interference and liquid chrome
+      let lineCounter = 0;
       for (let y = 0; y < canvas.height; y += 15) {
         ctx.beginPath();
-        // Create oil rainbow per line
-        const lineHue = (hueShift * 2 + y * 0.5 + Math.sin(timeRef.current + y * 0.01) * 60) % 360;
-        const lineSat = 80 + Math.sin(y * 0.02 + timeRef.current * 2) * 20;
-        const lineLightness = 50 + Math.cos(y * 0.01 + timeRef.current) * 25;
-        ctx.strokeStyle = `hsla(${lineHue}, ${lineSat}%, ${lineLightness}%, ${0.5 + shimmer * 0.3})`;
-        ctx.lineWidth = 2;
+        
+        // Every 3rd line is liquid chrome
+        const isChromeLine = lineCounter % 3 === 0;
+        lineCounter++;
+        
+        if (isChromeLine) {
+          // Liquid chrome effect - sharp reflective gradients
+          const chromePhase = Math.sin(timeRef.current * 2 + y * 0.02);
+          const chromeIntensity = Math.abs(Math.sin(timeRef.current * 3 + y * 0.01));
+          
+          // Create chrome gradient along the line
+          const gradient = ctx.createLinearGradient(0, y, canvas.width, y);
+          
+          // Chrome has sharp transitions between dark and bright
+          if (chromePhase > 0) {
+            // Bright reflection phase
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${0.7 * chromeIntensity})`);
+            gradient.addColorStop(0.2, `rgba(230, 230, 255, ${0.5 * chromeIntensity})`);
+            gradient.addColorStop(0.4, `rgba(40, 40, 50, ${0.8})`);
+            gradient.addColorStop(0.6, `rgba(255, 255, 255, ${0.9 * chromeIntensity})`);
+            gradient.addColorStop(0.8, `rgba(180, 180, 200, ${0.4 * chromeIntensity})`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.6 * chromeIntensity})`);
+          } else {
+            // Dark reflection phase
+            gradient.addColorStop(0, `rgba(10, 10, 15, ${0.9})`);
+            gradient.addColorStop(0.3, `rgba(30, 30, 40, ${0.7})`);
+            gradient.addColorStop(0.5, `rgba(240, 240, 255, ${0.8 * chromeIntensity})`);
+            gradient.addColorStop(0.7, `rgba(20, 20, 30, ${0.8})`);
+            gradient.addColorStop(1, `rgba(5, 5, 10, ${0.9})`);
+          }
+          
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 3; // Slightly thicker for chrome
+          
+          // Add glow effect for chrome
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = chromePhase > 0 ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.8)';
+        } else {
+          // Oil slick rainbow lines
+          const lineHue = (hueShift * 2 + y * 0.5 + Math.sin(timeRef.current + y * 0.01) * 60) % 360;
+          const lineSat = 80 + Math.sin(y * 0.02 + timeRef.current * 2) * 20;
+          const lineLightness = 50 + Math.cos(y * 0.01 + timeRef.current) * 25;
+          ctx.strokeStyle = `hsla(${lineHue}, ${lineSat}%, ${lineLightness}%, ${0.5 + shimmer * 0.3})`;
+          ctx.lineWidth = 2;
+          ctx.shadowBlur = 0;
+        }
         
         for (let x = 0; x <= canvas.width; x += 10) {
           const wave1 = Math.sin((x * 0.01) + timeRef.current + (y * 0.01)) * 20;
@@ -89,15 +130,51 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
         ctx.stroke();
       }
       
-      // Vertical oil film lines for mesh/interference
+      // Vertical oil film lines for mesh/interference with chrome accents
+      let vertLineCounter = 0;
       for (let x = 0; x < canvas.width; x += 15) {
         ctx.beginPath();
-        // Create complementary oil rainbow
-        const lineHue = (hueShift * 3 + x * 0.5 + Math.cos(timeRef.current + x * 0.01) * 90) % 360;
-        const lineSat = 90; // High saturation for oil
-        const lineLightness = 60 + Math.sin(x * 0.01 + timeRef.current * 1.5) * 20;
-        ctx.strokeStyle = `hsla(${lineHue}, ${lineSat}%, ${lineLightness}%, ${0.3 + shimmer * 0.2})`;
-        ctx.lineWidth = 1.5;
+        
+        // Every 3rd vertical line is chrome
+        const isChromeLine = vertLineCounter % 3 === 0;
+        vertLineCounter++;
+        
+        if (isChromeLine) {
+          // Vertical chrome reflection
+          const chromePhase = Math.cos(timeRef.current * 2.5 + x * 0.02);
+          const chromeIntensity = Math.abs(Math.sin(timeRef.current * 2 + x * 0.015));
+          
+          // Chrome gradient for vertical lines
+          const gradient = ctx.createLinearGradient(x, 0, x, canvas.height);
+          
+          if (chromePhase > 0) {
+            // Bright metallic sheen
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${0.6 * chromeIntensity})`);
+            gradient.addColorStop(0.3, `rgba(200, 200, 220, ${0.4 * chromeIntensity})`);
+            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.8 * chromeIntensity})`);
+            gradient.addColorStop(0.7, `rgba(150, 150, 170, ${0.3 * chromeIntensity})`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.5 * chromeIntensity})`);
+          } else {
+            // Dark chrome shadow
+            gradient.addColorStop(0, `rgba(5, 5, 10, ${0.8})`);
+            gradient.addColorStop(0.4, `rgba(15, 15, 25, ${0.6})`);
+            gradient.addColorStop(0.6, `rgba(220, 220, 240, ${0.7 * chromeIntensity})`);
+            gradient.addColorStop(1, `rgba(10, 10, 20, ${0.7})`);
+          }
+          
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 2;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = chromePhase > 0 ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.6)';
+        } else {
+          // Regular oil rainbow lines
+          const lineHue = (hueShift * 3 + x * 0.5 + Math.cos(timeRef.current + x * 0.01) * 90) % 360;
+          const lineSat = 90; // High saturation for oil
+          const lineLightness = 60 + Math.sin(x * 0.01 + timeRef.current * 1.5) * 20;
+          ctx.strokeStyle = `hsla(${lineHue}, ${lineSat}%, ${lineLightness}%, ${0.3 + shimmer * 0.2})`;
+          ctx.lineWidth = 1.5;
+          ctx.shadowBlur = 0;
+        }
         
         for (let y = 0; y <= canvas.height; y += 10) {
           const wave1 = Math.sin((y * 0.01) + timeRef.current * 0.8 + (x * 0.01)) * 15;
