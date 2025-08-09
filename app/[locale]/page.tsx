@@ -401,7 +401,7 @@ export default function HomePage() {
               {/* Navigation Commands */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Link href="/en/gallery" className="group">
-                  <div className="bg-black/90 border-2 rounded p-4 backdrop-blur-sm transition-all duration-300"
+                  <div className="bg-black/95 border-2 rounded p-4 backdrop-blur-sm transition-all duration-300"
                        style={{ 
                          borderColor: `${currentEntity?.color}60`,
                          boxShadow: `0 0 20px ${currentEntity?.color}10`
@@ -412,7 +412,7 @@ export default function HomePage() {
                        }}
                        onMouseLeave={(e) => {
                          e.currentTarget.style.borderColor = `${currentEntity?.color}60`;
-                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.95)';
                        }}>
                     <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
                       $ <span style={{ color: '#ffe95c' }}>cd</span> /gallery
@@ -424,7 +424,7 @@ export default function HomePage() {
                 </Link>
                 
                 <Link href="/en/blog" className="group">
-                  <div className="bg-black/90 border-2 rounded p-4 backdrop-blur-sm transition-all duration-300"
+                  <div className="bg-black/95 border-2 rounded p-4 backdrop-blur-sm transition-all duration-300"
                        style={{ 
                          borderColor: `${currentEntity?.color}60`,
                          boxShadow: `0 0 20px ${currentEntity?.color}10`
@@ -435,7 +435,7 @@ export default function HomePage() {
                        }}
                        onMouseLeave={(e) => {
                          e.currentTarget.style.borderColor = `${currentEntity?.color}60`;
-                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.95)';
                        }}>
                     <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
                       $ <span style={{ color: '#ffe95c' }}>cd</span> /blog
@@ -447,7 +447,7 @@ export default function HomePage() {
                 </Link>
                 
                 <Link href="/en/music" className="group">
-                  <div className="bg-black/90 border-2 rounded p-4 backdrop-blur-sm transition-all duration-300"
+                  <div className="bg-black/95 border-2 rounded p-4 backdrop-blur-sm transition-all duration-300"
                        style={{ 
                          borderColor: `${currentEntity?.color}60`,
                          boxShadow: `0 0 20px ${currentEntity?.color}10`
@@ -458,7 +458,7 @@ export default function HomePage() {
                        }}
                        onMouseLeave={(e) => {
                          e.currentTarget.style.borderColor = `${currentEntity?.color}60`;
-                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                         e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.95)';
                        }}>
                     <div className="font-mono text-sm mb-2" style={{ color: currentEntity?.color }}>
                       $ <span style={{ color: '#ffe95c' }}>cd</span> /music
