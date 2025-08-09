@@ -44,17 +44,17 @@ function SubliminalFlash({ entity }: { entity: any }) {
   
   useEffect(() => {
     const flashInterval = setInterval(() => {
-      // Only flash occasionally (10% chance)
-      if (Math.random() < 0.1) {
+      // Flash more frequently (40% chance)
+      if (Math.random() < 0.4) {
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
         setFlashContent(randomMessage || '');
         setShowFlash(true);
         
-        // Flash duration between 50-150ms
-        const flashDuration = 50 + Math.random() * 100;
+        // Flash duration between 100-300ms (longer for visibility)
+        const flashDuration = 100 + Math.random() * 200;
         setTimeout(() => setShowFlash(false), flashDuration);
       }
-    }, 2000 + Math.random() * 3000); // Random interval 2-5 seconds
+    }, 1000 + Math.random() * 2000); // Random interval 1-3 seconds (more frequent)
     
     return () => clearInterval(flashInterval);
   }, [entity]);
@@ -66,9 +66,10 @@ function SubliminalFlash({ entity }: { entity: any }) {
       className="absolute top-4 right-4 font-mono text-xs pointer-events-none"
       style={{ 
         color: entity?.color || '#00ff00',
-        opacity: 0.3 + Math.random() * 0.4,
-        textShadow: `0 0 10px ${entity?.color}66`,
-        animation: 'glitch 0.1s infinite'
+        opacity: 0.7 + Math.random() * 0.3, // Higher opacity (0.7-1.0)
+        textShadow: `0 0 20px ${entity?.color}cc, 0 0 40px ${entity?.color}88`, // Brighter glow
+        animation: 'glitch 0.1s infinite',
+        filter: 'brightness(1.5)' // Make it brighter
       }}
     >
       {flashContent}
@@ -543,8 +544,11 @@ export default function HomePage() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Module Cards */}
-                <div className="border rounded p-6 bg-black/50 transition-all duration-500"
-                     style={{ borderColor: `${currentEntity?.color}20` }}>
+                <div className="border rounded p-6 transition-all duration-500"
+                     style={{ 
+                       borderColor: `${currentEntity?.color}20`,
+                       backgroundColor: 'rgba(0, 0, 0, 0.95)' // Nearly opaque (95%)
+                     }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">▓▓▓</span>
                   </div>
@@ -558,8 +562,11 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                <div className="border rounded p-6 bg-black/50 transition-all duration-500"
-                     style={{ borderColor: `${currentEntity?.color}20` }}>
+                <div className="border rounded p-6 transition-all duration-500"
+                     style={{ 
+                       borderColor: `${currentEntity?.color}20`,
+                       backgroundColor: 'rgba(0, 0, 0, 0.95)' // Nearly opaque (95%)
+                     }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">█▓█</span>
                   </div>
@@ -572,8 +579,11 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                <div className="border rounded p-6 bg-black/50 transition-all duration-500"
-                     style={{ borderColor: `${currentEntity?.color}20` }}>
+                <div className="border rounded p-6 transition-all duration-500"
+                     style={{ 
+                       borderColor: `${currentEntity?.color}20`,
+                       backgroundColor: 'rgba(0, 0, 0, 0.95)' // Nearly opaque (95%)
+                     }}>
                   <div className="mb-4" style={{ color: currentEntity?.color }}>
                     <span className="text-2xl">░▒▓</span>
                   </div>
