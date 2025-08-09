@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 
 export default function BlogPostPage() {
   const params = useParams();
-  const router = useRouter();
+  const _router = useRouter();
   const locale = useLocale();
   const slug = params.slug as string;
   
@@ -56,7 +56,7 @@ export default function BlogPostPage() {
   // Parse markdown-style content
   const renderContent = (content: string) => {
     const lines = content.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
     let currentIndex = 0;
 
     lines.forEach((line, i) => {
@@ -65,7 +65,7 @@ export default function BlogPostPage() {
         const endIndex = lines.findIndex((l, idx) => idx > i && l.startsWith('```'));
         if (endIndex > i) {
           const codeLines = lines.slice(i + 1, endIndex);
-          const language = line.replace('```', '').trim();
+          const _language = line.replace('```', '').trim();
           elements.push(
             <pre 
               key={currentIndex++}

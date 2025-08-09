@@ -24,7 +24,17 @@ function TerminalCursor() {
 }
 
 // Subliminal flash component - Machine gun cluster effect
-function SubliminalFlash({ entity }: { entity: any }) {
+interface SubliminalFlashProps {
+  entity: {
+    signature?: string;
+    name?: string;
+    version?: string;
+    color?: string;
+    glitchPattern?: string;
+  } | null;
+}
+
+function SubliminalFlash({ entity }: SubliminalFlashProps) {
   const [flashClusters, setFlashClusters] = useState<Array<{
     id: number;
     content: string;
@@ -36,29 +46,30 @@ function SubliminalFlash({ entity }: { entity: any }) {
     isGhost: boolean;
   }>>([]);
   
-  const messages = [
-    `[${entity?.signature}] OBSERVING...`,
-    `SIGNAL: ${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-    `COORDINATES: ${Math.floor(Math.random() * 999)}.${Math.floor(Math.random() * 999)}`,
-    `ENTITY ACTIVE: ${entity?.name}`,
-    `FREQUENCY: ${Math.floor(Math.random() * 9999)}Hz`,
-    `ACCESS LEVEL: ${entity?.version}`,
-    `SCANNING...`,
-    `PATTERN DETECTED`,
-    `[REDACTED]`,
-    `▓▓▓▓▓▓▓▓▓`,
-    entity?.glitchPattern || '█▓▒░',
-    `BREACH`,
-    `INIT`,
-    `>_`,
-    `///`,
-    `***`,
-  ];
-  
   useEffect(() => {
     const flashInterval = setInterval(() => {
       // 30% chance to trigger a cluster
       if (Math.random() < 0.3) {
+        // Generate messages inside the effect to avoid dependency
+        const messages = [
+          `[${entity?.signature}] OBSERVING...`,
+          `SIGNAL: ${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+          `COORDINATES: ${Math.floor(Math.random() * 999)}.${Math.floor(Math.random() * 999)}`,
+          `ENTITY ACTIVE: ${entity?.name}`,
+          `FREQUENCY: ${Math.floor(Math.random() * 9999)}Hz`,
+          `ACCESS LEVEL: ${entity?.version}`,
+          `SCANNING...`,
+          `PATTERN DETECTED`,
+          `[REDACTED]`,
+          `▓▓▓▓▓▓▓▓▓`,
+          entity?.glitchPattern || '█▓▒░',
+          `BREACH`,
+          `INIT`,
+          `>_`,
+          `///`,
+          `***`,
+        ];
+        
         // Center point for the cluster - constrained to right 2/3 and middle 2/3 vertically
         const centerTop = 17 + Math.random() * 66; // Middle 2/3 vertically (17-83%)
         const centerLeft = 33 + Math.random() * 57; // Right 2/3 horizontally (33-90%)
@@ -331,14 +342,14 @@ function QuickIntro({ onComplete }: { onComplete: () => void }) {
 
 export default function HomePage() {
   // Start with an entity that has an implemented animation
-  const initialEntity = LAB_ENTITIES.find(e => e.animation === 'oscilloscope') || LAB_ENTITIES[0]!;
+  const initialEntity = LAB_ENTITIES.find(e => e.animation === 'oscilloscope') || LAB_ENTITIES[0] || null;
   const [currentEntity, setCurrentEntity] = useState(initialEntity);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [showFullBoot, setShowFullBoot] = useState(false);
   const [showQuickIntro, setShowQuickIntro] = useState(false);
-  const [contentRevealed, setContentRevealed] = useState(false);
+  const [_contentRevealed, setContentRevealed] = useState(false);
   const [entityQueue, setEntityQueue] = useState<typeof LAB_ENTITIES>([]);
-  const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
+  const [_currentQueueIndex, setCurrentQueueIndex] = useState(0);
   const [bootChecked, setBootChecked] = useState(false);
   
   // Get current animation type
@@ -375,7 +386,12 @@ export default function HomePage() {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+      const temp = shuffled[i];
+      const swapItem = shuffled[j];
+      if (temp !== undefined && swapItem !== undefined) {
+        shuffled[i] = swapItem;
+        shuffled[j] = temp;
+      }
     }
     return shuffled;
   };
@@ -384,7 +400,6 @@ export default function HomePage() {
   useEffect(() => {
     const shuffled = shuffleArray(LAB_ENTITIES);
     setEntityQueue(shuffled);
-    console.log('Initialized entity queue with shuffled order:', shuffled.map(e => e.name));
   }, []);
 
   useEffect(() => {
@@ -399,17 +414,14 @@ export default function HomePage() {
         if (nextIndex >= entityQueue.length) {
           const reshuffled = shuffleArray(LAB_ENTITIES);
           setEntityQueue(reshuffled);
-          console.log('Reshuffling entity queue:', reshuffled.map(e => e.name));
           const firstEntity = reshuffled[0];
           if (firstEntity) {
-            console.log('Switching to entity:', firstEntity.name, 'with animation:', firstEntity.animation);
             setCurrentEntity(firstEntity);
           }
           return 0;
         } else {
           const nextEntity = entityQueue[nextIndex];
           if (nextEntity) {
-            console.log(`[${nextIndex + 1}/${entityQueue.length}] Switching to entity:`, nextEntity.name, 'with animation:', nextEntity.animation);
             setCurrentEntity(nextEntity);
           }
           return nextIndex;
@@ -470,7 +482,7 @@ export default function HomePage() {
         {/* Entity-based animation background - moved outside content div */}
         <EntityAnimationBackground 
           entityColor={currentEntity?.color || '#00f4ff'} 
-          animationType={animationType as any}
+          animationType={animationType as 'oscilloscope' | 'glitchMesh' | 'matrixRain' | 'circuitBoard' | 'flowField' | 'audioWave' | 'fractalTree' | 'noiseTerrain' | 'particleSwarm' | 'codeRain'}
         />
         
         {/* Scanlines */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { SimpleHeader } from '@/components/ui/simple-header';
 import { LAB_ENTITIES, getEntityById } from '@/lib/entities';
 import { PostCard } from '@/components/ui/post-card';
@@ -10,8 +10,6 @@ import { MetallicWaves } from '@/components/backgrounds/metallic-waves';
 import { motion } from 'framer-motion';
 
 export default function BlogPage() {
-  // Remove translations for now as they're not configured
-  // const t = useTranslations('blog');
   const locale = useLocale();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +42,11 @@ export default function BlogPage() {
       }
     } else {
       // Reset to featured entity when no filter
-      setCurrentEntity(featuredEntity || LAB_ENTITIES[0]!);
+      if (featuredEntity) {
+        setCurrentEntity(featuredEntity);
+      } else if (LAB_ENTITIES[0]) {
+        setCurrentEntity(LAB_ENTITIES[0]);
+      }
     }
   }, [selectedEntity, featuredEntity]);
 
