@@ -39,73 +39,80 @@ export function MetallicWaves({ entityColor = '#00f4ff' }: MetallicWavesProps) {
     window.addEventListener('resize', resize);
 
     const animate = () => {
-      timeRef.current += 0.002;
+      timeRef.current += 0.003;
       
-      // Clear with subtle fade
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.02)';
+      // Clear canvas completely for clean metallic effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Create metallic gradient
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      // Create metallic shimmer with color shifts
+      const shimmer = Math.sin(timeRef.current * 3) * 0.5 + 0.5;
+      const colorShift = Math.sin(timeRef.current * 2) * 30;
       
-      // Animate gradient colors based on time
-      const shimmer = Math.sin(timeRef.current * 2) * 0.3 + 0.7;
+      // Draw metallic sheet background with gradient
+      const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      bgGradient.addColorStop(0, `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift)}, 0.03)`);
+      bgGradient.addColorStop(0.3, `rgba(${Math.min(255, baseColor.r + colorShift + 40)}, ${Math.min(255, baseColor.g + colorShift + 40)}, ${Math.min(255, baseColor.b + colorShift + 40)}, 0.05)`);
+      bgGradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.02 * shimmer})`); // White highlight for metallic sheen
+      bgGradient.addColorStop(0.7, `rgba(${Math.max(0, baseColor.r - 30)}, ${Math.max(0, baseColor.g - 30)}, ${Math.max(0, baseColor.b - 30)}, 0.04)`);
+      bgGradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.02)`);
       
-      gradient.addColorStop(0, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${0.05 * shimmer})`);
-      gradient.addColorStop(0.25, `rgba(${baseColor.r * 0.8}, ${baseColor.g * 0.8}, ${baseColor.b * 0.8}, ${0.08 * shimmer})`);
-      gradient.addColorStop(0.5, `rgba(${baseColor.r * 1.2}, ${baseColor.g * 1.2}, ${baseColor.b * 1.2}, ${0.1 * shimmer})`);
-      gradient.addColorStop(0.75, `rgba(${baseColor.r * 0.6}, ${baseColor.g * 0.6}, ${baseColor.b * 0.6}, ${0.08 * shimmer})`);
-      gradient.addColorStop(1, `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${0.05 * shimmer})`);
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw multiple wave layers for interference patterns
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 1;
-      
-      // First wave set - horizontal
-      for (let i = 0; i < 5; i++) {
+      // Draw metallic sheets as mesh grid that undulates
+      for (let y = 0; y < canvas.height; y += 20) {
         ctx.beginPath();
-        for (let x = 0; x < canvas.width; x += 5) {
-          const y = canvas.height / 2 + 
-            Math.sin((x * 0.01) + timeRef.current + i * 0.5) * 50 * (i + 1) +
-            Math.cos((x * 0.007) + timeRef.current * 1.5 + i) * 30;
+        ctx.strokeStyle = `rgba(${Math.min(255, baseColor.r + colorShift)}, ${Math.min(255, baseColor.g + colorShift)}, ${Math.min(255, baseColor.b + colorShift)}, ${0.1 + shimmer * 0.1})`;
+        ctx.lineWidth = 1;
+        
+        for (let x = 0; x <= canvas.width; x += 10) {
+          const wave1 = Math.sin((x * 0.01) + timeRef.current + (y * 0.01)) * 20;
+          const wave2 = Math.cos((x * 0.008) + timeRef.current * 1.3) * 15;
+          const yOffset = y + wave1 + wave2;
           
           if (x === 0) {
-            ctx.moveTo(x, y);
+            ctx.moveTo(x, yOffset);
           } else {
-            ctx.lineTo(x, y);
+            ctx.lineTo(x, yOffset);
           }
         }
         ctx.stroke();
       }
-
-      // Second wave set - vertical (creates interference)
-      for (let i = 0; i < 3; i++) {
+      
+      // Vertical lines for mesh/interference
+      for (let x = 0; x < canvas.width; x += 20) {
         ctx.beginPath();
-        for (let y = 0; y < canvas.height; y += 5) {
-          const x = canvas.width / 2 + 
-            Math.sin((y * 0.01) + timeRef.current * 0.8 + i * 0.7) * 100 * (i + 1) +
-            Math.cos((y * 0.005) + timeRef.current + i * 0.3) * 50;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.02 + shimmer * 0.03})`; // White for metallic highlights
+        ctx.lineWidth = 0.5;
+        
+        for (let y = 0; y <= canvas.height; y += 10) {
+          const wave1 = Math.sin((y * 0.01) + timeRef.current * 0.8 + (x * 0.01)) * 15;
+          const wave2 = Math.cos((y * 0.006) + timeRef.current) * 10;
+          const xOffset = x + wave1 + wave2;
           
           if (y === 0) {
-            ctx.moveTo(x, y);
+            ctx.moveTo(xOffset, y);
           } else {
-            ctx.lineTo(x, y);
+            ctx.lineTo(xOffset, y);
           }
         }
         ctx.stroke();
       }
-
-      // Add metallic highlight spots (moiré effect)
-      for (let i = 0; i < 20; i++) {
-        const x = (Math.sin(timeRef.current * 0.5 + i * 0.5) + 1) * canvas.width / 2;
-        const y = (Math.cos(timeRef.current * 0.3 + i * 0.7) + 1) * canvas.height / 2;
-        const radius = Math.sin(timeRef.current * 2 + i) * 20 + 30;
+      
+      // Add specular highlights for metallic sheen
+      const numHighlights = 5;
+      for (let i = 0; i < numHighlights; i++) {
+        const x = (Math.sin(timeRef.current * 0.7 + i * 2) + 1) * canvas.width / 2;
+        const y = (Math.cos(timeRef.current * 0.5 + i * 1.5) + 1) * canvas.height / 2;
+        const radius = 100 + Math.sin(timeRef.current * 2 + i) * 50;
         
-        const spotGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        spotGradient.addColorStop(0, `rgba(${baseColor.r * 1.5}, ${baseColor.g * 1.5}, ${baseColor.b * 1.5}, ${0.1 * shimmer})`);
-        spotGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        const highlightGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${0.1 * shimmer})`);
+        highlightGradient.addColorStop(0.5, `rgba(${baseColor.r + 50}, ${baseColor.g + 50}, ${baseColor.b + 50}, ${0.05 * shimmer})`);
+        highlightGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         
-        ctx.fillStyle = spotGradient;
+        ctx.fillStyle = highlightGradient;
         ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
       }
 

@@ -53,13 +53,9 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
             </div>
           </div>
           
-          <button
-            onClick={handleReplayBoot}
-            className="text-green-400/40 hover:text-green-400 transition-colors text-[10px] font-mono"
-            title="Replay boot sequence"
-          >
-            [BOOT]
-          </button>
+          <span className="text-green-400/60 text-[10px]">
+            {currentTime ? currentTime.substring(0, 5) : '00:00'}
+          </span>
         </div>
         
         {/* Mobile navigation - horizontal scroll */}

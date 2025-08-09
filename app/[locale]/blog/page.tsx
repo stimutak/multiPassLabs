@@ -57,18 +57,36 @@ export default function BlogPage() {
       
       <main className="min-h-screen bg-black pt-20 md:pt-12 p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header - Terminal Style */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-12 border-2 rounded-lg p-6 bg-black/80 backdrop-blur-sm"
+          style={{ 
+            borderColor: `${currentEntity?.color}60`,
+            boxShadow: `0 0 30px ${currentEntity?.color}20`
+          }}
         >
-          <h1 className="text-4xl font-bold mb-4 font-mono" style={{ color: currentEntity?.color }}>
-            // {t('title') || 'EXPERIMENTAL TRANSMISSIONS'}
-          </h1>
-          <p className="text-green-400/60 mb-6 font-mono">
-            {t('subtitle') || 'Discoveries and technical insights from the lab collective'}
-          </p>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <div className="w-2 h-2 rounded-full bg-yellow-500" />
+            <div className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="ml-4 text-xs font-mono" style={{ color: `${currentEntity?.color}99` }}>
+              transmissions@multipass.labs ~ {currentEntity?.signature || '[UNKNOWN]'}
+            </span>
+          </div>
+          
+          <div className="font-mono">
+            <div className="text-2xl mb-2" style={{ color: currentEntity?.color }}>
+              $ cat /var/log/transmissions
+            </div>
+            <div className="text-sm" style={{ color: `${currentEntity?.color}80` }}>
+              {'>'} {t('subtitle') || 'Technical discoveries and experimental insights from the lab collective'}
+            </div>
+            <div className="text-sm mt-2" style={{ color: `${currentEntity?.color}60` }}>
+              {'>'} Total transmissions: {BLOG_POSTS.filter(p => p.published).length} | Active entities: {LAB_ENTITIES.length}
+            </div>
+          </div>
         </motion.div>
 
         {/* Entity Filter */}
