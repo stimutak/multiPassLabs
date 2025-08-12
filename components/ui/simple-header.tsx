@@ -7,9 +7,10 @@ import { LabEntity } from '@/lib/entities';
 
 interface SimpleHeaderProps {
   currentEntity?: LabEntity;
+  onBootReplay?: () => void;
 }
 
-export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
+export function SimpleHeader({ currentEntity, onBootReplay }: SimpleHeaderProps = {}) {
   const _pathname = usePathname();
   const [currentTime, setCurrentTime] = useState('');
   const [_showMobileMenu, _setShowMobileMenu] = useState(false);
@@ -29,7 +30,11 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
     return () => clearInterval(interval);
   }, []);
   
-  
+  const handleBootReplay = () => {
+    if (onBootReplay) {
+      onBootReplay();
+    }
+  };
   
   return (
     <header className="fixed top-0 w-full z-40 bg-black border-b border-green-500/20">
@@ -47,7 +52,16 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
             </div>
           </div>
           
-          <span className="text-green-400/60 text-[10px]">
+          {/* Boot replay button - mobile */}
+          <button
+            onClick={handleBootReplay}
+            className="text-green-400 hover:text-green-300 transition-all duration-200 font-mono text-xs"
+            title="Replay boot sequence"
+          >
+            [⚡]
+          </button>
+          
+          <span className="text-green-400/60 text-[10px] ml-2">
             {currentTime ? currentTime.substring(0, 5) : '00:00'}
           </span>
         </div>
@@ -111,6 +125,18 @@ export function SimpleHeader({ currentEntity }: SimpleHeaderProps = {}) {
           <span style={{ color: currentEntity?.color || '#ffffff' }}>
             {currentEntity?.signature || '[UNKNOWN]'}
           </span>
+          <span className="text-green-400/40">|</span>
+          {/* Boot replay button - desktop */}
+          <button
+            onClick={handleBootReplay}
+            className="text-green-400 hover:text-green-300 transition-all duration-200 font-mono text-xs hover:animate-pulse"
+            title="Replay boot sequence"
+            style={{
+              textShadow: '0 0 5px rgba(0, 255, 0, 0.3)'
+            }}
+          >
+            [BOOT]
+          </button>
           <span className="text-green-400/40">|</span>
           <span className="text-green-400/60">
             {currentTime || '00:00:00'}

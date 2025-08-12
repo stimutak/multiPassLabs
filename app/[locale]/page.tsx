@@ -36,7 +36,7 @@ interface SubliminalFlashProps {
 
 function SubliminalFlash({ entity }: SubliminalFlashProps) {
   const [flashClusters, setFlashClusters] = useState<Array<{
-    id: number;
+    id: string;
     content: string;
     top: string;
     left: string;
@@ -78,13 +78,15 @@ function SubliminalFlash({ entity }: SubliminalFlashProps) {
         const clusterSize = 3 + Math.floor(Math.random() * 6);
         
         for (let i = 0; i < clusterSize; i++) {
-          setTimeout(() => {
-            const flashId = Date.now() + Math.random();
-            const flashContent = messages[Math.floor(Math.random() * messages.length)] || '';
-            const flashTop = `${centerTop + (Math.random() - 0.5) * 20}%`;
-            const flashLeft = `${centerLeft + (Math.random() - 0.5) * 20}%`;
-            const flashRotation = (Math.random() - 0.5) * 30;
-            const flashFontSize = 18 + Math.floor(Math.random() * 12);
+          ((index) => {
+            setTimeout(() => {
+              // Use a more unique ID combining timestamp, index, and random value
+              const flashId = `${Date.now()}-${index}-${Math.random().toString(36).substring(2, 9)}`;
+              const flashContent = messages[Math.floor(Math.random() * messages.length)] || '';
+              const flashTop = `${centerTop + (Math.random() - 0.5) * 20}%`;
+              const flashLeft = `${centerLeft + (Math.random() - 0.5) * 20}%`;
+              const flashRotation = (Math.random() - 0.5) * 30;
+              const flashFontSize = 18 + Math.floor(Math.random() * 12);
             
             // Main flash - very brief
             const flash = {
@@ -106,8 +108,9 @@ function SubliminalFlash({ entity }: SubliminalFlashProps) {
               setFlashClusters(prev => prev.filter(f => f.id !== flashId));
               
               // Add ghost immediately after
+              const ghostId = `${flashId}-ghost`;
               const ghost = {
-                id: flashId + 0.1,
+                id: ghostId,
                 content: flashContent,
                 top: flashTop,
                 left: flashLeft,
@@ -121,10 +124,11 @@ function SubliminalFlash({ entity }: SubliminalFlashProps) {
               
               // Remove ghost after brief fade (150-250ms)
               setTimeout(() => {
-                setFlashClusters(prev => prev.filter(f => f.id !== ghost.id));
+                setFlashClusters(prev => prev.filter(f => f.id !== ghostId));
               }, 150 + Math.random() * 100);
             }, flashDuration);
-          }, i * (10 + Math.random() * 30)); // Faster stagger (10-40ms)
+          }, index * (10 + Math.random() * 30)); // Faster stagger (10-40ms)
+          })(i);
         }
       }
     }, 2000 + Math.random() * 3000); // Check every 2-5 seconds
@@ -473,10 +477,14 @@ export default function HomePage() {
     return <QuickIntro onComplete={handleQuickIntroComplete} />;
   }
 
+  const handleBootReplay = () => {
+    setShowFullBoot(true);
+  };
+
   return (
     <>
       {/* Show header only after intro/boot is complete */}
-      <SimpleHeader currentEntity={currentEntity} />
+      <SimpleHeader currentEntity={currentEntity} onBootReplay={handleBootReplay} />
       
       <main className="relative min-h-screen bg-black pt-20 md:pt-12">
         {/* Entity-based animation background - moved outside content div */}
